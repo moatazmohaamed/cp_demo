@@ -1,0 +1,530 @@
+<div class="orders-page" style="height: 100vh;">
+  <!-- Toolbar / Page Header -->
+  <div class="orders-toolbar">
+    <div class="orders-toolbar__left">
+      <h1 class="orders-toolbar__title">Dental lab orders</h1>
+      <span class="orders-toolbar__count">{{ orderCount() }}</span>
+    </div>
+    <div class="orders-toolbar__right">
+      <button class="modern-btn modern-btn--primary" type="button">
+        <tui-icon icon="@tui.plus" />
+        New order
+      </button>
+      <button class="modern-btn modern-btn--outline" type="button" (click)="exportAllOrders()">
+        <tui-icon icon="@tui.download" />
+        Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters bar -->
+  <div class="orders-filters">
+    <div class="orders-filters__row">
+      <!-- Search input -->
+      <div class="orders-filters__search">
+        <tui-icon icon="@tui.search" class="orders-filters__search-icon" />
+        <input
+          type="text"
+          class="orders-filters__search-input"
+          placeholder="Search by Patient, Doctor, ID, or Scan Center..."
+          [ngModel]="searchInput()"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </div>
+
+      <!-- Filter pills -->
+      <div class="orders-filters__pills">
+        <!-- Status filter -->
+        <div class="filter-dropdown">
+          <button class="filter-pill" type="button">
+            Status: {{ selectedStatus() }}
+            <tui-icon icon="@tui.chevron-down" class="filter-pill__chevron" />
+          </button>
+          <div class="filter-dropdown__menu">
+            @for (status of statusOptions; track status) {
+              <button
+                class="filter-dropdown__item"
+                [class.filter-dropdown__item--active]="selectedStatus() === status"
+                type="button"
+                (click)="selectedStatus.set(status)"
+              >
+                {{ status }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Duration filter -->
+        <div class="filter-dropdown">
+          <button class="filter-pill" type="button">
+            Duration: {{ selectedDuration() }}
+            <tui-icon icon="@tui.chevron-down" class="filter-pill__chevron" />
+          </button>
+          <div class="filter-dropdown__menu">
+            @for (dur of durationOptions; track dur) {
+              <button
+                class="filter-dropdown__item"
+                [class.filter-dropdown__item--active]="selectedDuration() === dur"
+                type="button"
+                (click)="selectedDuration.set(dur)"
+              >
+                {{ dur }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Custom date range -->
+        @if (selectedDuration() === 'Custom range') {
+          <div class="custom-range">
+            <input
+              type="date"
+              class="custom-range__input"
+              [ngModel]="customDateFrom()"
+              (ngModelChange)="customDateFrom.set($event)"
+            />
+            <span class="custom-range__separator">to</span>
+            <input
+              type="date"
+              class="custom-range__input"
+              [ngModel]="customDateTo()"
+              (ngModelChange)="customDateTo.set($event)"
+            />
+          </div>
+        }
+
+        <!-- Scan center filter -->
+        <div class="filter-dropdown">
+          <button class="filter-pill" type="button">
+            @if (selectedScanCenter() === 'All scan centers') {
+              Radiology ID / Scan Center
+            } @else {
+              Center: {{ selectedScanCenter() }}
+            }
+            <tui-icon icon="@tui.chevron-down" class="filter-pill__chevron" />
+          </button>
+          <div class="filter-dropdown__menu">
+            @for (center of uniqueScanCenters(); track center) {
+              <button
+                class="filter-dropdown__item"
+                [class.filter-dropdown__item--active]="selectedScanCenter() === center"
+                type="button"
+                (click)="selectedScanCenter.set(center)"
+              >
+                {{ center }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="orders-filters__actions">
+        <!-- Clear all button -->
+        @if (activeFilterCount() > 0) {
+          <button class="modern-btn modern-btn--outline" type="button" (click)="clearAllFilters()">
+            <tui-icon icon="@tui.x" />
+            Clear all
+          </button>
+        }
+
+        <!-- Filter button with active count -->
+        <button class="modern-btn modern-btn--outline" type="button">
+          <tui-icon icon="@tui.filter" />
+          Filter
+          @if (activeFilterCount() > 0) {
+            <span class="filter-badge">{{ activeFilterCount() }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="orders-summary">
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--orders">
+        <tui-icon icon="@tui.package" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ orderCount() }}</span>
+        <span class="summary-card__label">Total Orders</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--amount">
+        <tui-icon icon="@tui.dollar-sign" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ totalBilled() | currency:'USD':'symbol':'1.0-0' }}</span>
+        <span class="summary-card__label">Amount Billed</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--selected">
+        <tui-icon icon="@tui.check-square" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ checkedOrders().size }}</span>
+        <span class="summary-card__label">Selected</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--vip">
+        <tui-icon icon="@tui.star" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ getVipCount() }}</span>
+        <span class="summary-card__label">VIP Orders</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selection bar -->
+  @if (checkedOrders().size > 0) {
+    <div class="selection-bar">
+      <div class="selection-bar__info">
+        <tui-icon icon="@tui.check-square" />
+        <span>{{ checkedOrders().size }} order{{ checkedOrders().size === 1 ? '' : 's' }} selected</span>
+      </div>
+      <div class="selection-bar__actions">
+        <button class="selection-bar__btn" type="button" (click)="clearSelection()">
+          Clear selection
+        </button>
+        <button class="selection-bar__btn selection-bar__btn--primary" type="button" (click)="exportSelectedOrders()">
+          <tui-icon icon="@tui.download" />
+          Export selected
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Data table -->
+  <div class="modern-table-wrapper">
+    <div class="modern-table-header">
+      <div class="table-header-content">
+        <h3 class="table-title">Order Management</h3>
+        <div class="table-actions">
+          <button class="table-action-btn" type="button" (click)="exportAllOrders()">
+            <tui-icon icon="@tui.download" />
+            Export
+          </button>
+          <div class="columns-dropdown">
+            <button class="table-action-btn" type="button" (click)="showColumnDropdown.set(!showColumnDropdown())">
+              <tui-icon icon="@tui.settings" />
+              Columns
+            </button>
+            @if (showColumnDropdown()) {
+              <div class="columns-dropdown__menu">
+                @for (col of columns(); track col.key) {
+                  <label class="columns-dropdown__item">
+                    <input
+                      type="checkbox"
+                      [checked]="col.visible"
+                      [disabled]="col.visible && visibleColumnCount() <= 5"
+                      (change)="toggleColumnVisibility(col.key)"
+                    />
+                    {{ col.label }}
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modern-table-scroll">
+      <table class="modern-table">
+        <thead class="modern-table-head">
+          <tr>
+            <th class="col-checkbox">
+              <input
+                type="checkbox"
+                class="modern-checkbox"
+                [checked]="isAllOnPageChecked()"
+                (change)="toggleCheckAll()"
+              />
+            </th>
+            @for (col of visibleColumns(); track col.key) {
+              <th>
+                <div class="th-content" (click)="toggleSort(col.key)">
+                  {{ col.label }}
+                  <tui-icon [icon]="getSortIcon(col.key)" class="th-sort-icon" />
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody class="modern-table-body">
+          @if (filteredAndSortedOrders().length === 0) {
+            <tr>
+              <td [attr.colspan]="visibleColumnCount() + 1">
+                <div class="empty-state">
+                  <tui-icon icon="@tui.search" class="empty-state__icon" />
+                  <h3 class="empty-state__title">No orders found</h3>
+                  <p class="empty-state__subtitle">Try adjusting your filters or search term</p>
+                  <button class="modern-btn modern-btn--outline" type="button" (click)="clearAllFilters()">
+                    Clear filters
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (order of paginatedOrders(); track order.id) {
+              <tr
+                class="modern-table-row"
+                [class.modern-table-row--checked]="checkedOrders().has(order.id)"
+              >
+                <td class="col-checkbox">
+                  <input
+                    type="checkbox"
+                    class="modern-checkbox"
+                    [checked]="checkedOrders().has(order.id)"
+                    (change)="toggleCheckRow(order.id)"
+                  />
+                </td>
+                @for (col of visibleColumns(); track col.key) {
+                  <td>
+                    @switch (col.key) {
+                      @case ('id') {
+                        <a class="order-id-link">#{{ order.id }}</a>
+                      }
+                      @case ('scanCenter') {
+                        {{ formatCellValue(order.scanCenter) }}
+                      }
+                      @case ('doctor') {
+                        <div class="doctor-info">
+                          <div class="doctor-avatar">{{ getDoctorInitials(order.doctor) }}</div>
+                          <div class="doctor-details">
+                            <span class="doctor-name">{{ getDoctorName(order.doctor) }}</span>
+                            <span class="doctor-clinic">{{ getDoctorClinic(order.doctor) }}</span>
+                          </div>
+                        </div>
+                      }
+                      @case ('patientName') {
+                        <div class="patient-info">
+                          <div class="patient-name-row">
+                            <span class="patient-name">{{ order.patientName }}</span>
+                            @if (order.isVip) {
+                              <span class="vip-badge">
+                                <tui-icon icon="@tui.star" class="vip-icon" />
+                                VIP
+                              </span>
+                            }
+                          </div>
+                          <span class="patient-numbering">{{ order.patientNumbering }}</span>
+                        </div>
+                      }
+                      @case ('isLocked') {
+                        @if (order.isLocked) {
+                          <span class="lock-indicator"><tui-icon icon="@tui.lock" /></span>
+                        } @else {
+                          —
+                        }
+                      }
+                      @case ('notes') {
+                        @if (order.notes) {
+                          <span class="notes-indicator" [title]="order.notes">
+                            <tui-icon icon="@tui.message-square" />
+                          </span>
+                        } @else {
+                          —
+                        }
+                      }
+                      @case ('archiveDate') {
+                        {{ formatDate(order.archiveDate) }}
+                      }
+                      @case ('orderType') {
+                        <div class="order-details-cell">
+                          <div class="order-type-badge">
+                            <tui-icon icon="@tui.package" class="order-type-icon" />
+                            {{ order.orderType }}
+                          </div>
+                          @if (order.orderLabel) {
+                            <span class="order-label">{{ order.orderLabel }}</span>
+                          }
+                          @if (order.isVip) {
+                            <span class="vip-badge">
+                              <tui-icon icon="@tui.star" class="vip-icon" />
+                              VIP
+                            </span>
+                          }
+                        </div>
+                      }
+                      @case ('billTo') {
+                        <div class="billing-details">
+                          <span class="bill-to">{{ formatCellValue(order.billTo) }}</span>
+                          @if (order.billToAccount) {
+                            <span class="bill-account">{{ order.billToAccount }}</span>
+                          }
+                        </div>
+                      }
+                      @case ('maxillary') {
+                        <div class="arch-indicator" [class.arch-indicator--active]="order.maxillary">
+                          @if (order.maxillary) {
+                            <span class="arch-check">✓</span> Max
+                          } @else {
+                            —
+                          }
+                        </div>
+                      }
+                      @case ('mandibular') {
+                        <div class="arch-indicator" [class.arch-indicator--active]="order.mandibular">
+                          @if (order.mandibular) {
+                            <span class="arch-check">✓</span> Mand
+                          } @else {
+                            —
+                          }
+                        </div>
+                      }
+                      @case ('format') {
+                        @if (order.format) {
+                          <span class="format-chip">{{ order.format }}</span>
+                        } @else {
+                          —
+                        }
+                      }
+                      @case ('amountBilled') {
+                        <span class="amount-value">{{ order.amountBilled | currency:'USD':'symbol':'1.0-0' }}</span>
+                      }
+                      @case ('vouchers') {
+                        @if (order.vouchers && order.vouchers !== 'N/A') {
+                          <span class="voucher-badge">{{ order.vouchers }}</span>
+                        } @else {
+                          —
+                        }
+                      }
+                      @case ('receivedTime') {
+                        {{ formatDate(order.receivedTime) }}
+                      }
+                      @case ('sentTime') {
+                        {{ formatDate(order.sentTime) }}
+                      }
+                      @case ('updateTime') {
+                        {{ formatDate(order.updateTime) }}
+                      }
+                      @case ('updateStatus') {
+                        <div class="status-pill">
+                          <span class="status-text">{{ order.updateStatus }}</span>
+                        </div>
+                      }
+                      @case ('chargedOn') {
+                        @if (order.chargedOn === 'Not Yet') {
+                          <span class="charged-date charged-date--pending">Not yet</span>
+                        } @else {
+                          {{ formatDate(order.chargedOn) }}
+                        }
+                      }
+                      @case ('action') {
+                        <div class="actions-cell">
+                          @if (order.action !== 'No Actions Supported') {
+                            <button class="action-button" type="button">
+                              <tui-icon [icon]="getActionIcon(order.action)" class="action-icon" />
+                              {{ order.action }}
+                            </button>
+                          } @else {
+                            <span class="no-actions">—</span>
+                          }
+                        </div>
+                      }
+                      @case ('changeRequest') {
+                        {{ formatCellValue(order.changeRequest) }}
+                      }
+                      @case ('csTask') {
+                        {{ formatCellValue(order.csTask) }}
+                      }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    @if (showPagination()) {
+      <div class="modern-table-footer">
+        <div class="footer-left">
+          <div class="page-size-selector">
+            <label class="page-size-label">Rows per page:</label>
+            <select
+              class="page-size-select"
+              [ngModel]="pageSize()"
+              (ngModelChange)="onPageSizeChange($event)"
+            >
+              @for (opt of pageSizeOptions; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="footer-center">
+          <span class="results-info">
+            Showing {{ pageStart() }} – {{ pageEnd() }} of <strong>{{ totalOrders() }}</strong> orders
+          </span>
+        </div>
+
+        <div class="footer-right">
+          <div class="pagination-controls">
+            <button
+              class="pagination-btn"
+              type="button"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+              title="First"
+            >
+              <tui-icon icon="@tui.chevrons-left" />
+            </button>
+            <button
+              class="pagination-btn"
+              type="button"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+              title="Previous"
+            >
+              <tui-icon icon="@tui.chevron-left" />
+            </button>
+            <div class="pagination-pages">
+              @for (page of getPageNumbers(); track page) {
+                <span
+                  class="pagination-page"
+                  [class.pagination-page--active]="page === currentPage()"
+                  (click)="onPageChange(page)"
+                >
+                  {{ page }}
+                </span>
+              }
+              @if (totalPages() > 5 && currentPage() < totalPages() - 2) {
+                <span class="pagination-ellipsis">...</span>
+                <span class="pagination-page" (click)="onPageChange(totalPages())">
+                  {{ totalPages() }}
+                </span>
+              }
+            </div>
+            <button
+              class="pagination-btn"
+              type="button"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+              title="Next"
+            >
+              <tui-icon icon="@tui.chevron-right" />
+            </button>
+            <button
+              class="pagination-btn"
+              type="button"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+              title="Last"
+            >
+              <tui-icon icon="@tui.chevrons-right" />
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

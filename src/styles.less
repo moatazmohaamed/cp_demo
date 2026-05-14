@@ -1,0 +1,123 @@
+/* ===== 3D Diagnostix – Global Design Tokens ===== */
+@import '@taiga-ui/styles/utils.less';
+
+/* ---------- Custom Properties – Refined Light Theme ---------- */
+:root {
+  /* Brand / Navigation */
+  --dx-nav-bg: #1a6496;
+  --dx-nav-border: #155070;
+  --dx-nav-text-active: #ffffff;
+  --dx-nav-text-muted: #a8cfe8;
+
+  /* Accent / VIP */
+  --dx-accent: #e8a317;
+  --dx-accent-light: #fef3dc;
+
+  /* Link */
+  --dx-link-blue: #2980b9;
+  --dx-link-light: #e8f4fd;
+
+  /* Surfaces */
+  --dx-bg-page: #f5f9fc;
+  --dx-bg-surface: #ffffff;
+  --dx-bg-hover: #f0f7fc;
+
+  /* Borders */
+  --dx-border-default: #d0e4f0;
+  --dx-border-light: #e8f0f5;
+
+  /* Text */
+  --dx-text-primary: #1a2730;
+  --dx-text-secondary: #5a7a8a;
+  --dx-text-hint: #8aabb8;
+
+  /* Status – No Updates */
+  --dx-status-error-text: #c0392b;
+  --dx-status-error-fill: #fdf0ee;
+  --dx-status-error-border: #e8b8b2;
+
+  /* Status – Not Yet */
+  --dx-status-warning-text: #b85c00;
+  --dx-status-warning-fill: #fff4e6;
+  --dx-status-warning-border: #f5cfa0;
+
+  /* Row hover */
+  --dx-row-hover: #f0f7fc;
+
+  /* Radius */
+  --dx-radius-card: 8px;
+  --dx-radius-input: 6px;
+  --dx-radius-badge: 4px;
+
+  /* Transitions */
+  --dx-transition-fast: 150ms ease;
+}
+
+/* ---------- Base Reset & Typography ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--dx-bg-page);
+  color: var(--dx-text-primary);
+  min-height: 100vh;
+}
+
+/* ---------- Scrollbar Styling ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dx-border-light);
+  border-radius: 3px;
+
+  &:hover {
+    background: var(--dx-border-default);
+  }
+}
+
+/* ---------- Utility Classes ---------- */
+.dx-container {
+  max-width: 100%;
+  padding: 0 1.5rem;
+}
+
+.dx-card {
+  background: var(--dx-bg-surface);
+  border-radius: var(--dx-radius-card);
+  border: 1px solid var(--dx-border-default);
+}
+
+.dx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 2px 6px;
+  border-radius: var(--dx-radius-badge);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid;
+}
+
+/* ---------- Google Fonts ---------- */

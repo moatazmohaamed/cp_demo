@@ -1,0 +1,52 @@
+<header class="dx-header">
+  <!-- Top bar -->
+  <div class="dx-header__top">
+    <div class="dx-header__brand">
+      <div class="dx-header__logo">
+        <span class="dx-header__logo-cube">3D</span>
+        <span class="dx-header__logo-text">Diagnostix</span>
+      </div>
+    </div>
+
+    <nav class="dx-header__nav">
+      @for (item of navItems; track item.label) {
+        <button
+          class="dx-header__nav-item"
+          [class.dx-header__nav-item--active]="item.active"
+          type="button"
+        >
+          <tui-icon [icon]="item.icon" class="dx-header__nav-icon" />
+          <span>{{ item.label }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="dx-header__actions">
+      <!-- Search -->
+      <div class="dx-header__search">
+        <tui-icon icon="@tui.search" class="dx-header__search-icon" />
+        <input
+          type="text"
+          placeholder="Search..."
+          class="dx-header__search-input"
+        />
+      </div>
+
+      <!-- Action buttons -->
+      <button class="dx-header__action-btn" type="button">
+        <tui-icon icon="@tui.bell" />
+      </button>
+
+      <button class="dx-header__action-btn" type="button">
+        <tui-icon icon="@tui.headphones" />
+        <span class="dx-header__action-label">Support</span>
+      </button>
+
+      <div class="dx-header__user">
+        <div class="dx-header__user-avatar">AK</div>
+        <span class="dx-header__user-name">shrenik</span>
+        <tui-icon icon="@tui.chevron-down" class="dx-header__user-chevron" />
+      </div>
+    </div>
+  </div>
+</header>
