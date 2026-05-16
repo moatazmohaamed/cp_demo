@@ -1,5 +1,5 @@
 import { Component, signal, computed, effect } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TuiIcon } from '@taiga-ui/core';
 
@@ -25,7 +25,7 @@ interface ColumnDefinition {
     CurrencyPipe,
   ],
   templateUrl: './orders-page.html',
-  styleUrl: './order-page.less',
+  styleUrl: './order-page.scss',
 })
 export class OrdersPageComponent {
   readonly allOrders = signal<Order[]>(MOCK_ORDERS);
@@ -59,6 +59,27 @@ export class OrdersPageComponent {
   // Page range for "Showing X - Y of Z"
   readonly pageStart = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   readonly pageEnd = computed(() => Math.min(this.currentPage() * this.pageSize(), this.totalOrders()));
+
+  // Expanded sub-services tracking
+  readonly expandedOrders = signal(new Set<number>());
+
+  toggleExpand(orderId: number): void {
+    const updated = new Set(this.expandedOrders());
+    if (updated.has(orderId)) {
+      updated.delete(orderId);
+    } else {
+      updated.add(orderId);
+    }
+    this.expandedOrders.set(updated);
+  }
+
+  getSubServiceTotal(order: Order): number {
+    return order.subServices.reduce((sum, svc) => sum + svc.unitPrice * svc.quantity, 0);
+  }
+
+  getSubServiceStatusCount(order: Order, status: string): number {
+    return order.subServices.filter((s) => s.status === status).length;
+  }
 
   // Column visibility
   readonly columns = signal<ColumnDefinition[]>([

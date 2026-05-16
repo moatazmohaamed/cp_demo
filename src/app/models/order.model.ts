@@ -1,3 +1,5 @@
+import { SubService } from './sub-service.model';
+
 export interface Order {
   id: number;
   scanCenter: string;
@@ -25,4 +27,5 @@ export interface Order {
   action: string;
   changeRequest: string;
   csTask: string | null;
+  subServices: SubService[];
 }

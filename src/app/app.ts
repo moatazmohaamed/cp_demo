@@ -8,7 +8,7 @@ import { HeaderComponent } from './components/header/header';
   selector: 'app-root',
   imports: [RouterOutlet, TuiRoot, TuiIcon, HeaderComponent],
   templateUrl: './app.html',
-  styleUrl: './app.less',
+  styleUrl: './app.scss',
 })
 export class App {
   protected readonly title = signal('demo_cp');

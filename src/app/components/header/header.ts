@@ -15,7 +15,7 @@ import { TuiAvatar, TuiBadgeNotification, TuiBadgedContent } from '@taiga-ui/kit
     TuiBadgedContent,
   ],
   templateUrl: './header.html',
-  styleUrl: './header.less',
+  styleUrl: './header.scss',
 })
 export class HeaderComponent {
   readonly navItems = [

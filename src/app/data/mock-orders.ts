@@ -1,4 +1,12 @@
 import { Order } from '../models/order.model';
+import { SubService } from '../models/sub-service.model';
+
+function subSvc(
+  id: number, name: string, qty: number, price: number,
+  status: string, assigned: string, due: string, completed: string, notes: string
+): SubService {
+  return { id, name, quantity: qty, unitPrice: price, status, assignedTo: assigned, dueDate: due, completedDate: completed, notes };
+}
 
 export const MOCK_ORDERS: Order[] = [
   {
@@ -27,7 +35,13 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: 'Not Yet',
     action: 'No Actions Supported',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'Impression Scan', 1, 15, 'Completed', 'Ahmed R.', '2025-04-26', '2025-04-26', ''),
+      subSvc(2, 'Model Design', 1, 12, 'Completed', 'Sara K.', '2025-04-27', '2025-04-27', ''),
+      subSvc(3, 'Quality Check', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
+      subSvc(4, 'Packaging', 1, 8, 'Pending', '—', '2025-04-28', '', 'Awaiting materials'),
+    ]
   },
   {
     id: 521581,
@@ -55,7 +69,12 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'Digital Scan', 1, 18, 'Completed', 'Nadia H.', '2025-04-25', '2025-04-25', ''),
+      subSvc(2, 'CAD Design', 2, 30, 'Completed', 'Karim A.', '2025-04-26', '2025-04-26', ''),
+      subSvc(3, '3D Printing', 2, 22, 'Completed', 'Samir F.', '2025-04-26', '2025-04-26', ''),
+    ]
   },
   {
     id: 521579,
@@ -83,7 +102,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: []
   },
   {
     id: 521578,
@@ -111,7 +131,15 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-28',
     action: 'Reprint',
     changeRequest: 'CR-441',
-    csTask: 'CS-109'
+    csTask: 'CS-109',
+    subServices: [
+      subSvc(1, 'Digital Impression', 1, 20, 'Completed', 'Mona L.', '2025-04-26', '2025-04-26', ''),
+      subSvc(2, 'CAD Modeling', 1, 35, 'Completed', 'Omar F.', '2025-04-27', '2025-04-27', ''),
+      subSvc(3, 'CAM Milling', 1, 25, 'Completed', 'Hany S.', '2025-04-27', '2025-04-27', ''),
+      subSvc(4, 'Sintering', 1, 15, 'Completed', 'Ali R.', '2025-04-27', '2025-04-27', ''),
+      subSvc(5, 'Staining & Glazing', 1, 18, 'In Progress', 'Maria G.', '2025-04-28', '', ''),
+      subSvc(6, 'Final QC', 1, 7, 'Pending', '—', '2025-04-29', '', ''),
+    ]
   },
   {
     id: 521571,
@@ -139,7 +167,11 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: 'CS-110'
+    csTask: 'CS-110',
+    subServices: [
+      subSvc(1, 'Digital Scan', 1, 18, 'Completed', 'Yara N.', '2025-04-25', '2025-04-25', ''),
+      subSvc(2, 'CAD Design', 2, 30, 'Pending', '—', '2025-04-29', '', 'Waiting for doctor approval'),
+    ]
   },
   {
     id: 521565,
@@ -167,7 +199,14 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-26',
     action: 'Reorder',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'Impression Scan', 1, 15, 'Completed', 'Khaled M.', '2025-04-24', '2025-04-24', ''),
+      subSvc(2, 'Bridge Design', 1, 40, 'Completed', 'Dina S.', '2025-04-25', '2025-04-25', ''),
+      subSvc(3, 'Milling', 1, 28, 'Completed', 'Tamer H.', '2025-04-25', '2025-04-25', ''),
+      subSvc(4, 'Ceramic Layering', 1, 35, 'Completed', 'Noha A.', '2025-04-26', '2025-04-26', ''),
+      subSvc(5, 'Finishing & QC', 1, 12, 'Completed', 'Mahmoud R.', '2025-04-26', '2025-04-26', ''),
+    ]
   },
   {
     id: 521558,
@@ -195,7 +234,16 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: 'CR-438',
-    csTask: 'CS-107'
+    csTask: 'CS-107',
+    subServices: [
+      subSvc(1, 'Intraoral Scan', 1, 25, 'Completed', 'Hossam E.', '2025-04-22', '2025-04-22', ''),
+      subSvc(2, 'Treatment Planning', 1, 50, 'Completed', 'Dr. Youssef', '2025-04-23', '2025-04-23', ''),
+      subSvc(3, 'Aligner Design', 3, 90, 'Completed', 'Laila W.', '2025-04-24', '2025-04-24', ''),
+      subSvc(4, '3D Printing', 3, 45, 'Completed', 'Amgad F.', '2025-04-24', '2025-04-24', ''),
+      subSvc(5, 'Trimming & Polishing', 3, 30, 'Completed', 'Rania B.', '2025-04-25', '2025-04-25', ''),
+      subSvc(6, 'Thermoforming', 3, 36, 'Completed', 'Sameh K.', '2025-04-25', '2025-04-25', ''),
+      subSvc(7, 'Final QC & Packaging', 1, 12, 'In Progress', 'Maha T.', '2025-04-26', '', ''),
+    ]
   },
   {
     id: 521580,
@@ -223,7 +271,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: []
   },
   {
     id: 521577,
@@ -251,7 +300,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: []
   },
   {
     id: 521576,
@@ -279,7 +329,13 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-28',
     action: 'Reprint',
     changeRequest: 'CR-441',
-    csTask: 'CS-109'
+    csTask: 'CS-109',
+    subServices: [
+      subSvc(1, 'Digital Scan', 1, 18, 'Completed', 'Mona L.', '2025-04-26', '2025-04-26', ''),
+      subSvc(2, 'CAD Design', 1, 30, 'Completed', 'Omar F.', '2025-04-26', '2025-04-26', ''),
+      subSvc(3, 'Milling', 1, 22, 'Completed', 'Hany S.', '2025-04-27', '2025-04-27', ''),
+      subSvc(4, 'Glazing', 1, 15, 'In Progress', 'Maria G.', '2025-04-28', '', 'Express priority'),
+    ]
   },
   {
     id: 521570,
@@ -307,7 +363,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: 'CS-110'
+    csTask: 'CS-110',
+    subServices: []
   },
   {
     id: 521564,
@@ -335,7 +392,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-26',
     action: 'Reorder',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: []
   },
   {
     id: 521557,
@@ -363,7 +421,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: 'CR-438',
-    csTask: 'CS-107'
+    csTask: 'CS-107',
+    subServices: []
   },
   {
     id: 521550,
@@ -391,7 +450,14 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-24',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'CBCT Scan Import', 1, 20, 'Completed', 'Ramy G.', '2025-04-22', '2025-04-22', ''),
+      subSvc(2, 'Implant Planning', 1, 45, 'Completed', 'Dr. Mansour', '2025-04-23', '2025-04-23', ''),
+      subSvc(3, 'Surgical Guide Design', 1, 35, 'Completed', 'Amira K.', '2025-04-23', '2025-04-23', ''),
+      subSvc(4, 'Guide 3D Printing', 1, 20, 'Completed', 'Karim N.', '2025-04-24', '2025-04-24', ''),
+      subSvc(5, 'Sterilization & Pack', 1, 8, 'Completed', '—', '2025-04-24', '2025-04-24', ''),
+    ]
   },
   {
     id: 521545,
@@ -419,7 +485,14 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-22',
     action: '',
     changeRequest: 'CR-435',
-    csTask: 'CS-105'
+    csTask: 'CS-105',
+    subServices: [
+      subSvc(1, 'Model Scan', 1, 12, 'Completed', 'Nadia H.', '2025-04-21', '2025-04-21', ''),
+      subSvc(2, 'Retainer Design', 1, 20, 'Completed', 'Sara K.', '2025-04-22', '2025-04-22', ''),
+      subSvc(3, '3D Printing', 1, 15, 'Completed', 'Amgad F.', '2025-04-22', '2025-04-22', ''),
+      subSvc(4, 'Finishing', 1, 8, 'Completed', 'Rania B.', '2025-04-22', '2025-04-22', ''),
+      subSvc(5, 'QC Check', 1, 5, 'Completed', 'Mahmoud R.', '2025-04-22', '2025-04-22', ''),
+    ]
   },
   {
     id: 521539,
@@ -447,7 +520,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-22',
     action: 'Reprint',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: []
   },
   {
     id: 521532,
@@ -475,7 +549,8 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: '',
-    csTask: 'CS-103'
+    csTask: 'CS-103',
+    subServices: []
   },
   {
     id: 521525,
@@ -503,7 +578,13 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-20',
     action: 'Reorder',
     changeRequest: 'CR-430',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'Scan Import', 1, 15, 'Completed', 'Hany S.', '2025-04-18', '2025-04-18', ''),
+      subSvc(2, 'Crown Design', 1, 35, 'Completed', 'Dina S.', '2025-04-19', '2025-04-19', ''),
+      subSvc(3, 'Milling', 1, 22, 'Completed', 'Tamer H.', '2025-04-19', '2025-04-19', ''),
+      subSvc(4, 'Final QC', 1, 8, 'Completed', 'Mahmoud R.', '2025-04-20', '2025-04-20', ''),
+    ]
   },
   {
     id: 521518,
@@ -531,7 +612,15 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '',
     action: '',
     changeRequest: 'CR-428',
-    csTask: 'CS-101'
+    csTask: 'CS-101',
+    subServices: [
+      subSvc(1, 'Intraoral Scan', 1, 25, 'Completed', 'Hossam E.', '2025-04-16', '2025-04-16', ''),
+      subSvc(2, 'Treatment Plan', 1, 50, 'Completed', 'Dr. Ismail', '2025-04-17', '2025-04-17', ''),
+      subSvc(3, 'Aligner Design', 4, 120, 'Completed', 'Laila W.', '2025-04-18', '2025-04-18', ''),
+      subSvc(4, '3D Printing', 4, 60, 'Completed', 'Amgad F.', '2025-04-18', '2025-04-18', ''),
+      subSvc(5, 'Trimming', 4, 40, 'Completed', 'Rania B.', '2025-04-19', '2025-04-19', ''),
+      subSvc(6, 'QC & Packaging', 1, 10, 'In Progress', 'Maha T.', '2025-04-20', '', 'Express - rush delivery'),
+    ]
   },
   {
     id: 521510,
@@ -559,7 +648,14 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-18',
     action: 'Reprint',
     changeRequest: '',
-    csTask: 'CS-099'
+    csTask: 'CS-099',
+    subServices: [
+      subSvc(1, 'Digital Impression', 1, 20, 'Completed', 'Ramy G.', '2025-04-16', '2025-04-16', ''),
+      subSvc(2, 'Bridge Framework Design', 1, 45, 'Completed', 'Amira K.', '2025-04-17', '2025-04-17', ''),
+      subSvc(3, 'Milling', 1, 30, 'Completed', 'Karim N.', '2025-04-17', '2025-04-17', ''),
+      subSvc(4, 'Porcelain Layering', 1, 40, 'Completed', 'Noha A.', '2025-04-18', '2025-04-18', ''),
+      subSvc(5, 'Final Finishing', 1, 15, 'Completed', 'Mahmoud R.', '2025-04-18', '2025-04-18', ''),
+    ]
   },
   {
     id: 521503,
@@ -587,7 +683,13 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-17',
     action: '',
     changeRequest: '',
-    csTask: null
+    csTask: null,
+    subServices: [
+      subSvc(1, 'Digital Scan', 1, 18, 'Completed', 'Yara N.', '2025-04-15', '2025-04-15', ''),
+      subSvc(2, 'Veneer Design', 2, 40, 'Completed', 'Dina S.', '2025-04-16', '2025-04-16', ''),
+      subSvc(3, 'Milling', 2, 30, 'Completed', 'Tamer H.', '2025-04-16', '2025-04-16', ''),
+      subSvc(4, 'Staining & Glazing', 2, 24, 'Completed', 'Maria G.', '2025-04-17', '2025-04-17', ''),
+    ]
   },
   {
     id: 521496,
@@ -615,6 +717,14 @@ export const MOCK_ORDERS: Order[] = [
     chargedOn: '2025-04-16',
     action: 'Reorder',
     changeRequest: 'CR-422',
-    csTask: 'CS-097'
+    csTask: 'CS-097',
+    subServices: [
+      subSvc(1, 'CT Scan Processing', 1, 25, 'Completed', 'Ramy G.', '2025-04-14', '2025-04-14', ''),
+      subSvc(2, 'Implant Planning', 1, 50, 'Completed', 'Dr. Ghali', '2025-04-15', '2025-04-15', ''),
+      subSvc(3, 'Surgical Guide Design', 1, 40, 'Completed', 'Amira K.', '2025-04-15', '2025-04-15', ''),
+      subSvc(4, 'Guide Printing', 1, 22, 'Completed', 'Amgad F.', '2025-04-15', '2025-04-15', ''),
+      subSvc(5, 'Temporary Prosthesis', 1, 55, 'Completed', 'Noha A.', '2025-04-16', '2025-04-16', ''),
+      subSvc(6, 'Final QC & Sterilization', 1, 10, 'Completed', 'Mahmoud R.', '2025-04-16', '2025-04-16', ''),
+    ]
   }
 ];

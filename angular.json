@@ -10,7 +10,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "less"
+          "style": "scss"
         }
       },
       "root": "",
@@ -22,7 +22,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "less",
+            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
@@ -37,7 +37,7 @@
             "styles": [
               "node_modules/@taiga-ui/styles/taiga-ui-theme.less",
               "node_modules/@taiga-ui/styles/taiga-ui-fonts.less",
-              "src/styles.less"
+              "src/styles.scss"
             ]
           },
           "configurations": {
