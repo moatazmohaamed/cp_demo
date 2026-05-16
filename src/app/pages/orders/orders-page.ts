@@ -1,10 +1,13 @@
 import { Component, signal, computed, effect } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TuiIcon } from '@taiga-ui/core';
 
 import { Order } from '../../models/order.model';
 import { MOCK_ORDERS } from '../../data/mock-orders';
+import { StatusHistoryModalComponent } from '../../components/status-history-modal/status-history-modal.component';
+import { FinancialSummaryComponent } from '../../components/financial-summary/financial-summary.component';
+import { FinancialDetailsModalComponent } from '../../components/financial-details-modal/financial-details-modal.component';
 
 type SortField = keyof Order | null;
 type SortOrder = 'asc' | 'desc' | null;
@@ -23,6 +26,9 @@ interface ColumnDefinition {
     FormsModule,
     TuiIcon,
     CurrencyPipe,
+    StatusHistoryModalComponent,
+    FinancialSummaryComponent,
+    FinancialDetailsModalComponent,
   ],
   templateUrl: './orders-page.html',
   styleUrl: './order-page.scss',
@@ -56,6 +62,14 @@ export class OrdersPageComponent {
   // Search input (immediate) vs debounced query
   readonly searchInput = signal('');
 
+  // ========== Status History Modal ==========
+  readonly statusHistoryModalOpen = signal(false);
+  readonly selectedOrderForModal = signal<Order | null>(null);
+
+  // ========== Financial Details Modal ==========
+  readonly financialDetailsModalOpen = signal(false);
+  readonly selectedOrderForFinancials = signal<Order | null>(null);
+
   // Page range for "Showing X - Y of Z"
   readonly pageStart = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   readonly pageEnd = computed(() => Math.min(this.currentPage() * this.pageSize(), this.totalOrders()));
@@ -79,6 +93,28 @@ export class OrdersPageComponent {
 
   getSubServiceStatusCount(order: Order, status: string): number {
     return order.subServices.filter((s) => s.status === status).length;
+  }
+
+  // ========== Status History Modal Methods ==========
+  openStatusHistoryModal(order: Order): void {
+    this.selectedOrderForModal.set(order);
+    this.statusHistoryModalOpen.set(true);
+  }
+
+  closeStatusHistoryModal(): void {
+    this.statusHistoryModalOpen.set(false);
+    this.selectedOrderForModal.set(null);
+  }
+
+  // ========== Financial Details Modal Methods ==========
+  openFinancialDetailsModal(order: Order): void {
+    this.selectedOrderForFinancials.set(order);
+    this.financialDetailsModalOpen.set(true);
+  }
+
+  closeFinancialDetailsModal(): void {
+    this.financialDetailsModalOpen.set(false);
+    this.selectedOrderForFinancials.set(null);
   }
 
   // Column visibility
@@ -105,6 +141,10 @@ export class OrdersPageComponent {
     { key: 'action', label: 'Action', visible: true },
     { key: 'changeRequest', label: 'Change request', visible: true },
     { key: 'csTask', label: 'CS task', visible: true },
+    { key: 'orderStatus', label: 'Order Status', visible: false },
+    { key: 'paymentStatus', label: 'Payment Status', visible: true },
+    { key: 'shippingTier', label: 'Shipping Tier', visible: false },
+    { key: 'invoiceId', label: 'Invoice ID', visible: false },
   ]);
 
   readonly visibleColumns = computed(() =>
@@ -115,6 +155,17 @@ export class OrdersPageComponent {
 
   readonly statusOptions = ['All', 'No Updates', 'Updated', 'Pending'];
   readonly durationOptions = ['All', 'Today', 'Last 7 days', 'Last 30 days', 'Last 3 months', 'Custom range'];
+
+  // ========== Financial Analytics ==========
+  readonly totalRevenue = computed(() =>
+    this.filteredAndSortedOrders().reduce((sum, o) => sum + o.financials.totalAmount, 0)
+  );
+
+  readonly outstandingBalance = computed(() =>
+    this.filteredAndSortedOrders().reduce((sum, o) => sum + o.financials.outstandingBalance, 0)
+  );
+
+  readonly paidAmount = computed(() => this.totalRevenue() - this.outstandingBalance());
 
   readonly uniqueScanCenters = computed(() => {
     const centers = new Set<string>();
@@ -472,6 +523,52 @@ export class OrdersPageComponent {
 
   getVipCount(): number {
     return this.filteredAndSortedOrders().filter((order) => order.isVip).length;
+  }
+
+  // ========== Financial Helper Methods ==========
+  getPaymentStatusClass(status: string): string {
+    const statusMap: Record<string, string> = {
+      'paid': 'payment-status--paid',
+      'partial': 'payment-status--partial',
+      'pending': 'payment-status--pending',
+      'overdue': 'payment-status--overdue',
+      'refunded': 'payment-status--refunded',
+    };
+    return statusMap[status.toLowerCase()] || 'payment-status--pending';
+  }
+
+  getPaymentStatusIcon(status: string): string {
+    const iconMap: Record<string, string> = {
+      'paid': '@tui.check-circle',
+      'partial': '@tui.clock',
+      'pending': '@tui.alert-circle',
+      'overdue': '@tui.alert-triangle',
+      'refunded': '@tui.rotate-ccw',
+    };
+    return iconMap[status.toLowerCase()] || '@tui.circle';
+  }
+
+  formatCurrency(amount: number, currency: string = 'USD'): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  getFinancialSummaryText(order: Order): string {
+    const total = order.financials.totalAmount;
+    const outstanding = order.financials.outstandingBalance;
+    const paid = total - outstanding;
+    
+    if (outstanding === 0) {
+      return `Paid in full: ${this.formatCurrency(total)}`;
+    } else if (paid === 0) {
+      return `Outstanding: ${this.formatCurrency(outstanding)}`;
+    } else {
+      return `Paid ${this.formatCurrency(paid)} of ${this.formatCurrency(total)}`;
+    }
   }
 
   private escapeCSV(value: any): string {

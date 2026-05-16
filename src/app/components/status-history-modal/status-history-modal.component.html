@@ -1,0 +1,88 @@
+<div class="status-modal-overlay" [class.status-modal-overlay--open]="isOpen()" (click)="onClose()">
+  <div class="status-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="status-modal__header">
+      <div class="status-modal__header-content">
+        <h2 class="status-modal__title">Order Status History</h2>
+        <p class="status-modal__subtitle">Order #{{ orderId() }} - Current: <strong>{{ currentStatus() }}</strong></p>
+      </div>
+      <button class="status-modal__close" type="button" (click)="onClose()">
+        <tui-icon icon="@tui.x" />
+      </button>
+    </div>
+
+    <!-- Modal Body - Timeline -->
+    <div class="status-modal__body">
+      @if (statusHistory().length === 0) {
+        <div class="status-timeline-empty">
+          <tui-icon icon="@tui.inbox" class="status-timeline-empty__icon" />
+          <p class="status-timeline-empty__text">No status history available</p>
+        </div>
+      } @else {
+        <div class="status-timeline">
+          @for (item of statusHistory(); track item.id; let last = $last) {
+            <div class="status-timeline-item">
+              <!-- Timeline Dot and Line -->
+              <div class="status-timeline-item__line-container">
+                <div class="status-timeline-item__dot" [style.backgroundColor]="getStatusColor(item.status)">
+                  <tui-icon [icon]="getStatusIcon(item.status)" class="status-timeline-item__icon" />
+                </div>
+                @if (!last) {
+                  <div class="status-timeline-item__line"></div>
+                }
+              </div>
+
+              <!-- Timeline Content -->
+              <div class="status-timeline-item__content">
+                <div class="status-timeline-item__header">
+                  <div class="status-timeline-item__status">
+                    <span class="status-badge" [style.backgroundColor]="getStatusColor(item.status)">
+                      {{ item.status | uppercase }}
+                    </span>
+                    <span class="status-reason-code">
+                      {{ getReasonCodeLabel(item.reasonCode) }}
+                    </span>
+                  </div>
+                  <time class="status-timeline-item__time">
+                    {{ formatDate(item.timestamp) }}
+                  </time>
+                </div>
+
+                <p class="status-timeline-item__reason">{{ item.reason }}</p>
+
+                @if (item.notes) {
+                  <div class="status-timeline-item__notes">
+                    <strong>Notes:</strong> {{ item.notes }}
+                  </div>
+                }
+
+                <div class="status-timeline-item__metadata">
+                  <span class="metadata-badge">
+                    <tui-icon icon="@tui.user" />
+                    Changed by: <strong>{{ item.changedBy }}</strong>
+                  </span>
+                  @if (item.attachments && item.attachments.length > 0) {
+                    <span class="metadata-badge">
+                      <tui-icon icon="@tui.file" />
+                      {{ item.attachments.length }} attachment{{ item.attachments.length !== 1 ? 's' : '' }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="status-modal__footer">
+      <button class="modern-btn modern-btn--outline" type="button" (click)="onClose()">
+        Close
+      </button>
+      <div class="status-modal__footer-info">
+        Total Events: <strong>{{ statusHistory().length }}</strong>
+      </div>
+    </div>
+  </div>
+</div>

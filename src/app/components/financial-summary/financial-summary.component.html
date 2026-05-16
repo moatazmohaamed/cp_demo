@@ -1,0 +1,114 @@
+<div class="financial-summary" *ngIf="financials()">
+  <div class="financial-summary__container">
+    <!-- Header -->
+    <div class="financial-summary__header">
+      <div class="financial-summary__title-section">
+        <h4 class="financial-summary__title">Order #{{ orderId() }} - Financial Details</h4>
+        <span class="financial-summary__invoice" *ngIf="financials()?.currency">
+          {{ financials()!.currency }}
+        </span>
+      </div>
+      <button class="financial-summary__expand-btn" type="button" (click)="onOpenModal()" title="View full financial details">
+        <tui-icon icon="@tui.maximize-2" />
+      </button>
+    </div>
+
+    <!-- Payment Status Bar -->
+    <div class="payment-status-bar">
+      <div class="payment-status-bar__info">
+        <div class="payment-status-bar__status">
+          <tui-icon [icon]="getPaymentStatusIcon()" class="payment-status-bar__icon" [style.color]="getPaymentStatusColor()" />
+          <span class="payment-status-bar__label">{{ getPaymentStatusLabel() }}</span>
+        </div>
+        <div class="payment-status-bar__percentage" *ngIf="paymentStatus() !== 'refunded'">
+          {{ getPaymentPercentage() }}%
+        </div>
+      </div>
+      <div class="payment-progress-bar" [style.width.%]="getPaymentPercentage()"></div>
+    </div>
+
+    <!-- Financial Grid -->
+    <div class="financial-grid">
+      <!-- Column 1: Pricing -->
+      <div class="financial-cell">
+        <div class="financial-cell__label">Base Price</div>
+        <div class="financial-cell__value">{{ financials()!.basePrice | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <div class="financial-cell" *ngIf="financials()!.discountAmount > 0">
+        <div class="financial-cell__label">Discount</div>
+        <div class="financial-cell__value financial-cell__value--discount">
+          -{{ financials()!.discountAmount | currency:financials()!.currency:'symbol':'1.2-2' }}
+          <span class="discount-code">{{ getDiscountDisplay() }}</span>
+        </div>
+      </div>
+
+      <div class="financial-cell">
+        <div class="financial-cell__label">Subtotal</div>
+        <div class="financial-cell__value">{{ financials()!.subtotal | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <!-- Column 2: Fees -->
+      <div class="financial-cell">
+        <div class="financial-cell__label">Tax ({{ (financials()!.taxRate * 100) | number:'1.0-0' }}%)</div>
+        <div class="financial-cell__value">{{ financials()!.taxAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <div class="financial-cell" *ngIf="financials()!.shippingCost > 0">
+        <div class="financial-cell__label">Shipping</div>
+        <div class="financial-cell__value">{{ financials()!.shippingCost | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <div class="financial-cell" *ngIf="financials()!.handlingFee > 0">
+        <div class="financial-cell__label">Handling Fee</div>
+        <div class="financial-cell__value">{{ financials()!.handlingFee | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <div class="financial-cell" *ngIf="financials()!.insuranceFee > 0">
+        <div class="financial-cell__label">Insurance</div>
+        <div class="financial-cell__value">{{ financials()!.insuranceFee | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+
+      <!-- Total -->
+      <div class="financial-cell financial-cell--total">
+        <div class="financial-cell__label">Total Amount</div>
+        <div class="financial-cell__value financial-cell__value--total">{{ financials()!.totalAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+      </div>
+    </div>
+
+    <!-- Payment Details Row -->
+    <div class="financial-payment-row">
+      <div class="payment-detail-box" *ngIf="paymentStatus() === 'partial' || paymentStatus() === 'pending'">
+        <div class="payment-detail-box__label">Outstanding Balance</div>
+        <div class="payment-detail-box__value" [class.payment-detail-box__value--warning]="financials()!.daysOverdue > 0">
+          {{ financials()!.outstandingBalance | currency:financials()!.currency:'symbol':'1.2-2' }}
+          <span class="payment-detail-box__days" *ngIf="financials()!.daysOverdue > 0">
+            {{ financials()!.daysOverdue }} days overdue
+          </span>
+        </div>
+      </div>
+
+      <div class="payment-detail-box" *ngIf="paymentStatus() === 'partial'">
+        <div class="payment-detail-box__label">Paid Amount</div>
+        <div class="payment-detail-box__value">
+          {{ (financials()!.totalAmount - financials()!.outstandingBalance) | currency:financials()!.currency:'symbol':'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="payment-detail-box" *ngIf="financials()!.exchangeRate && financials()!.exchangeRate !== 1">
+        <div class="payment-detail-box__label">Exchange Rate</div>
+        <div class="payment-detail-box__value">
+          1 {{ financials()!.originalCurrency }} = {{ financials()!.exchangeRate | number:'1.2-4' }} {{ financials()!.currency }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer: Action Button -->
+    <div class="financial-summary__footer">
+      <button class="financial-summary__btn" type="button" (click)="onOpenModal()">
+        <tui-icon icon="@tui.eye" />
+        View Full Financial Details
+      </button>
+    </div>
+  </div>
+</div>

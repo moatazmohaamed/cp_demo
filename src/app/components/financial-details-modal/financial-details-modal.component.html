@@ -1,0 +1,231 @@
+<div class="financial-modal-overlay" [class.financial-modal-overlay--open]="isOpen()" (click)="onClose()">
+  <div class="financial-modal" (click)="$event.stopPropagation()" *ngIf="financials()">
+    <!-- Modal Header -->
+    <div class="financial-modal__header">
+      <div class="financial-modal__header-content">
+        <h2 class="financial-modal__title">Order Details #{{ orderId() }}</h2>
+        <p class="financial-modal__subtitle">Invoice: <strong>{{ invoiceId() }}</strong></p>
+      </div>
+      <button class="financial-modal__close" type="button" (click)="onClose()">
+        <tui-icon icon="@tui.x" />
+      </button>
+    </div>
+
+
+
+    <!-- Modal Body -->
+    <div class="financial-modal__body">
+          <!-- Tab Navigation -->
+          <div class="financial-modal__tabs">
+            <button class="financial-modal__tab-btn" [class.financial-modal__tab-btn--active]="activeTab === 'financial'"
+              (click)="activeTab = 'financial'" type="button">
+              <tui-icon icon="@tui.receipt" />
+              Financial Details
+            </button>
+            <button class="financial-modal__tab-btn" [class.financial-modal__tab-btn--active]="activeTab === 'breakdown'"
+              (click)="activeTab = 'breakdown'" type="button">
+              <tui-icon icon="@tui.list" />
+              Price Breakdown
+            </button>
+            <button class="financial-modal__tab-btn" [class.financial-modal__tab-btn--active]="activeTab === 'items'"
+              (click)="activeTab = 'items'" type="button">
+              <tui-icon icon="@tui.package" />
+              Line Items
+            </button>
+            <button class="financial-modal__tab-btn" [class.financial-modal__tab-btn--active]="activeTab === 'history'"
+              (click)="activeTab = 'history'" type="button">
+              <tui-icon icon="@tui.credit-card" />
+              Payment History
+            </button>
+          </div>
+      <!-- Tab 1: Financial Summary -->
+      @if (activeTab === 'financial') {
+        <div class="financial-tab-content">
+          <!-- Top Summary Cards -->
+          <div class="summary-cards">
+            <div class="summary-card summary-card--total">
+              <div class="summary-card__label">Total Amount</div>
+              <div class="summary-card__value">{{ financials()!.totalAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+            </div>
+
+            <div class="summary-card summary-card--paid">
+              <div class="summary-card__label">Amount Paid</div>
+              <div class="summary-card__value">{{ getPaidAmount() | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+            </div>
+
+            <div class="summary-card summary-card--balance" [class.summary-card--overdue]="financials()!.daysOverdue > 0">
+              <div class="summary-card__label">Outstanding Balance</div>
+              <div class="summary-card__value">{{ financials()!.outstandingBalance | currency:financials()!.currency:'symbol':'1.2-2' }}</div>
+              <div class="summary-card__meta" *ngIf="financials()!.daysOverdue > 0">
+                {{ financials()!.daysOverdue }} days overdue
+              </div>
+            </div>
+
+            <div class="summary-card summary-card--status" [class]="'summary-card--status-' + paymentStatus()">
+              <div class="summary-card__label">Payment Status</div>
+              <div class="summary-card__value">{{ paymentStatus() | uppercase }}</div>
+            </div>
+          </div>
+
+          <!-- Currency Info -->
+          <div class="currency-info" *ngIf="financials()!.exchangeRate && financials()!.exchangeRate !== 1">
+            <tui-icon icon="@tui.globe" />
+            <div class="currency-info__details">
+              <span class="currency-info__label">International Order</span>
+              <span class="currency-info__rate">
+                1 {{ financials()!.originalCurrency }} = {{ financials()!.exchangeRate | number:'1.2-4' }} {{ financials()!.currency }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 2: Price Breakdown -->
+      @if (activeTab === 'breakdown') {
+        <div class="financial-tab-content">
+          <div class="breakdown-section">
+            <table class="breakdown-table">
+              <tbody>
+                <tr class="breakdown-row">
+                  <td class="breakdown-row__label">Base Price</td>
+                  <td class="breakdown-row__value">{{ financials()!.basePrice | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">100%</td>
+                </tr>
+
+                <tr class="breakdown-row" *ngIf="financials()!.discountAmount > 0">
+                  <td class="breakdown-row__label">
+                    <span class="label-discount">
+                      <tui-icon icon="@tui.tag" /> Discount ({{ financials()!.discountCode }})
+                    </span>
+                  </td>
+                  <td class="breakdown-row__value breakdown-row__value--discount">-{{ financials()!.discountAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">-{{ financials()!.discountPercentage }}%</td>
+                </tr>
+
+                <tr class="breakdown-row breakdown-row--highlight">
+                  <td class="breakdown-row__label">Subtotal</td>
+                  <td class="breakdown-row__value">{{ financials()!.subtotal | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">{{ getPercentageOfTotal(financials()!.subtotal) }}%</td>
+                </tr>
+
+                <tr class="breakdown-row">
+                  <td class="breakdown-row__label">Tax ({{ (financials()!.taxRate * 100) | number:'1.0-0' }}%)</td>
+                  <td class="breakdown-row__value">{{ financials()!.taxAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">{{ getPercentageOfTotal(financials()!.taxAmount) }}%</td>
+                </tr>
+
+                <tr class="breakdown-row" *ngIf="financials()!.shippingCost > 0">
+                  <td class="breakdown-row__label"><tui-icon icon="@tui.package" /> Shipping</td>
+                  <td class="breakdown-row__value">{{ financials()!.shippingCost | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">{{ getPercentageOfTotal(financials()!.shippingCost) }}%</td>
+                </tr>
+
+                <tr class="breakdown-row" *ngIf="financials()!.handlingFee > 0">
+                  <td class="breakdown-row__label">Handling Fee</td>
+                  <td class="breakdown-row__value">{{ financials()!.handlingFee | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">{{ getPercentageOfTotal(financials()!.handlingFee) }}%</td>
+                </tr>
+
+                <tr class="breakdown-row" *ngIf="financials()!.insuranceFee > 0">
+                  <td class="breakdown-row__label"><tui-icon icon="@tui.shield" /> Insurance</td>
+                  <td class="breakdown-row__value">{{ financials()!.insuranceFee | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">{{ getPercentageOfTotal(financials()!.insuranceFee) }}%</td>
+                </tr>
+
+                <tr class="breakdown-row breakdown-row--total">
+                  <td class="breakdown-row__label">Total Amount Due</td>
+                  <td class="breakdown-row__value">{{ financials()!.totalAmount | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="breakdown-row__percentage">100%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 3: Line Items -->
+      @if (activeTab === 'items') {
+        <div class="financial-tab-content">
+          <div class="line-items-section">
+            <table class="line-items-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                  <th>Taxable</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of financials()!.lineItems; class: 'line-item-row'">
+                  <td class="line-item-row__desc">{{ item.description }}</td>
+                  <td class="line-item-row__qty">{{ item.quantity }}</td>
+                  <td class="line-item-row__price">{{ item.unitPrice | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="line-item-row__total">{{ item.total | currency:financials()!.currency:'symbol':'1.2-2' }}</td>
+                  <td class="line-item-row__taxable">
+                    <span class="taxable-badge" [class.taxable-badge--yes]="item.taxable">
+                      {{ item.taxable ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 4: Payment History -->
+      @if (activeTab === 'history') {
+        <div class="financial-tab-content">
+          <div class="deposits-section" *ngIf="financials()!.deposits && financials()!.deposits!.length > 0">
+            <div class="deposits-list">
+              <div *ngFor="let deposit of financials()!.deposits; class: 'deposit-item'">
+                <div class="deposit-item__info">
+                  <span class="deposit-item__id">{{ deposit.depositId }}</span>
+                  <span class="deposit-item__date">{{ deposit.depositDate | date:'MMM d, yyyy' }}</span>
+                </div>
+                <div class="deposit-item__amount">
+                  {{ deposit.depositAmount | currency:financials()!.currency:'symbol':'1.2-2' }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!financials()!.deposits || financials()!.deposits!.length === 0" class="empty-state">
+            <tui-icon icon="@tui.inbox" />
+            <p>No payment deposits recorded</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="financial-modal__footer">
+      <button class="modern-btn modern-btn--outline" type="button" (click)="onClose()">
+        Close
+      </button>
+      <div class="export-buttons">
+        <button 
+          class="modern-btn modern-btn--secondary" 
+          type="button" 
+          (click)="exportInvoiceAsCSV()"
+          [disabled]="isExporting"
+          title="Export as CSV for spreadsheet"
+        >
+          <tui-icon icon="@tui.download" />
+          <span>Export CSV</span>
+        </button>
+        <button 
+          class="modern-btn modern-btn--primary" 
+          type="button" 
+          (click)="exportInvoiceAsPDF()"
+          [disabled]="isExporting"
+          title="Export as PDF for printing"
+        >
+          <tui-icon icon="@tui.download" />
+          <span>{{ isExporting ? 'Exporting...' : 'Export PDF' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

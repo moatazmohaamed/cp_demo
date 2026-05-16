@@ -1,4 +1,23 @@
 <div class="orders-page" style="height: 100vh;">
+  <!-- Status History Modal -->
+  <app-status-history-modal 
+    [isOpen]="statusHistoryModalOpen()"
+    [statusHistory]="selectedOrderForModal()?.statusHistory || []"
+    [orderId]="selectedOrderForModal()?.id || 0"
+    [currentStatus]="selectedOrderForModal()?.orderStatus || ''"
+    (close)="closeStatusHistoryModal()"
+  />
+
+  <!-- Financial Details Modal -->
+  <app-financial-details-modal
+    [isOpen]="financialDetailsModalOpen()"
+    [financials]="selectedOrderForFinancials()?.financials || null"
+    [orderId]="selectedOrderForFinancials()?.id || 0"
+    [paymentStatus]="selectedOrderForFinancials()?.paymentStatus || 'pending'"
+    [invoiceId]="selectedOrderForFinancials()?.invoiceId || ''"
+    (close)="closeFinancialDetailsModal()"
+  />
+
   <!-- Toolbar / Page Header -->
   <div class="orders-toolbar">
     <div class="orders-toolbar__left">
@@ -175,6 +194,34 @@
       <div class="summary-card__content">
         <span class="summary-card__value">{{ getVipCount() }}</span>
         <span class="summary-card__label">VIP Orders</span>
+      </div>
+    </div>
+    <!-- New Financial Cards -->
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--revenue">
+        <tui-icon icon="@tui.trending-up" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ totalRevenue() | currency:'USD':'symbol':'1.0-0' }}</span>
+        <span class="summary-card__label">Total Revenue</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--paid">
+        <tui-icon icon="@tui.check-circle" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ paidAmount() | currency:'USD':'symbol':'1.0-0' }}</span>
+        <span class="summary-card__label">Amount Paid</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__icon summary-card__icon--outstanding">
+        <tui-icon icon="@tui.alert-circle" />
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__value">{{ outstandingBalance() | currency:'USD':'symbol':'1.0-0' }}</span>
+        <span class="summary-card__label">Outstanding Balance</span>
       </div>
     </div>
   </div>
@@ -416,11 +463,16 @@
                       @case ('updateTime') {
                         {{ formatDate(order.updateTime) }}
                       }
-                      @case ('updateStatus') {
-                        <div class="status-pill">
-                          <span class="status-text">{{ order.updateStatus }}</span>
-                        </div>
-                      }
+                       @case ('updateStatus') {
+                         <div class="status-pill">
+                           <span class="status-text">{{ order.updateStatus }}</span>
+                           @if (order.statusHistory && order.statusHistory.length > 0) {
+                             <button class="status-history-btn" type="button" (click)="openStatusHistoryModal(order)" title="View status history">
+                               <tui-icon icon="@tui.history" class="status-history-icon" />
+                             </button>
+                           }
+                         </div>
+                       }
                       @case ('chargedOn') {
                         @if (order.chargedOn === 'Not Yet') {
                           <span class="charged-date charged-date--pending">Not yet</span>
@@ -443,9 +495,51 @@
                       @case ('changeRequest') {
                         {{ formatCellValue(order.changeRequest) }}
                       }
-                      @case ('csTask') {
-                        {{ formatCellValue(order.csTask) }}
-                      }
+                       @case ('csTask') {
+                         {{ formatCellValue(order.csTask) }}
+                       }
+                       @case ('orderStatus') {
+                         <div class="order-status-badge" [class]="'order-status-' + order.orderStatus">
+                           <span class="status-dot"></span>
+                           {{ order.orderStatus | uppercase }}
+                         </div>
+                       }
+                       @case ('paymentStatus') {
+                         <div class="payment-status-cell">
+                           <div class="payment-status-badge" [class]="getPaymentStatusClass(order.paymentStatus)">
+                             <tui-icon [icon]="getPaymentStatusIcon(order.paymentStatus)" class="payment-status-icon" />
+                             {{ order.paymentStatus | uppercase }}
+                           </div>
+                           <button 
+                             class="financial-modal-btn" 
+                             type="button" 
+                             (click)="openFinancialDetailsModal(order)"
+                             title="View financial details"
+                           >
+                             <tui-icon icon="@tui.file-text" class="financial-modal-icon" />
+                             View
+                           </button>
+                         </div>
+                       }
+                       @case ('shippingTier') {
+                         <div class="shipping-tier-badge" [class]="'shipping-tier-' + order.shippingTier">
+                           <tui-icon icon="@tui.package" class="shipping-tier-icon" />
+                           {{ order.shippingTier | uppercase }}
+                         </div>
+                       }
+                       @case ('invoiceId') {
+                         <div class="invoice-cell">
+                           <span class="invoice-id">{{ order.invoiceId }}</span>
+                           <button 
+                             class="invoice-view-btn" 
+                             type="button" 
+                             (click)="openFinancialDetailsModal(order)"
+                             title="View full invoice"
+                           >
+                             <tui-icon icon="@tui.file-text" />
+                           </button>
+                         </div>
+                       }
                     }
                   </td>
                 }
