@@ -4,6 +4,14 @@ import { FinancialBreakdown } from './financial-breakdown.model';
 import { ShippingDetails } from './shipping-details.model';
 import { CustomerProfile } from './customer-profile.model';
 
+export interface CsTask {
+  id: string;
+  status: 'Assigned' | 'Revised' | 'Undo';
+  assignedDoctor?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Order {
   // ========== CORE ORDER FIELDS ==========
   id: number;
@@ -44,7 +52,7 @@ export interface Order {
   chargedOn: string;
   action: string;
   changeRequest: string;
-  csTask: string | null;
+  csTask: CsTask | null;
 
   // ========== FINANCIAL COMPLEXITY ==========
   financials: FinancialBreakdown;

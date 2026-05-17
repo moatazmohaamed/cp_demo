@@ -25,11 +25,11 @@
       <span class="orders-toolbar__count">{{ orderCount() }}</span>
     </div>
     <div class="orders-toolbar__right">
-      <button class="modern-btn modern-btn--primary" type="button">
+      <button class="modern-btn modern-btn--primary modern-btn--small" type="button">
         <tui-icon icon="@tui.plus" />
         New order
       </button>
-      <button class="modern-btn modern-btn--outline" type="button" (click)="exportAllOrders()">
+      <button class="modern-btn modern-btn--outline modern-btn--small" type="button" (click)="exportAllOrders()">
         <tui-icon icon="@tui.download" />
         Export
       </button>
@@ -140,14 +140,14 @@
       <div class="orders-filters__actions">
         <!-- Clear all button -->
         @if (activeFilterCount() > 0) {
-          <button class="modern-btn modern-btn--outline" type="button" (click)="clearAllFilters()">
+          <button class="modern-btn modern-btn--outline modern-btn--small" type="button" (click)="clearAllFilters()">
             <tui-icon icon="@tui.x" />
             Clear all
           </button>
         }
 
         <!-- Filter button with active count -->
-        <button class="modern-btn modern-btn--outline" type="button">
+        <button class="modern-btn modern-btn--outline modern-btn--small" type="button">
           <tui-icon icon="@tui.filter" />
           Filter
           @if (activeFilterCount() > 0) {
@@ -346,9 +346,17 @@
                 @for (col of visibleColumns(); track col.key) {
                   <td>
                     @switch (col.key) {
-                      @case ('id') {
-                        <a class="order-id-link">#{{ order.id }}</a>
-                      }
+                       @case ('id') {
+                         <div class="order-id-cell">
+                           <a class="order-id-link">#{{ order.id }}</a>
+                           @if (order.isVip) {
+                             <span class="vip-badge-under-id">
+                               <tui-icon icon="@tui.star" class="vip-icon" />
+                               VIP
+                             </span>
+                           }
+                         </div>
+                       }
                       @case ('scanCenter') {
                         {{ formatCellValue(order.scanCenter) }}
                       }
@@ -361,20 +369,14 @@
                           </div>
                         </div>
                       }
-                      @case ('patientName') {
-                        <div class="patient-info">
-                          <div class="patient-name-row">
-                            <span class="patient-name">{{ order.patientName }}</span>
-                            @if (order.isVip) {
-                              <span class="vip-badge">
-                                <tui-icon icon="@tui.star" class="vip-icon" />
-                                VIP
-                              </span>
-                            }
-                          </div>
-                          <span class="patient-numbering">{{ order.patientNumbering }}</span>
-                        </div>
-                      }
+                       @case ('patientName') {
+                         <div class="patient-info">
+                           <div class="patient-name-row">
+                             <span class="patient-name">{{ order.patientName }}</span>
+                           </div>
+                           <span class="patient-numbering">{{ order.patientNumbering }}</span>
+                         </div>
+                       }
                       @case ('isLocked') {
                         @if (order.isLocked) {
                           <span class="lock-indicator"><tui-icon icon="@tui.lock" /></span>
@@ -394,23 +396,17 @@
                       @case ('archiveDate') {
                         {{ formatDate(order.archiveDate) }}
                       }
-                      @case ('orderType') {
-                        <div class="order-details-cell">
-                          <div class="order-type-badge">
-                            <tui-icon icon="@tui.package" class="order-type-icon" />
-                            {{ order.orderType }}
-                          </div>
-                          @if (order.orderLabel) {
-                            <span class="order-label">{{ order.orderLabel }}</span>
-                          }
-                          @if (order.isVip) {
-                            <span class="vip-badge">
-                              <tui-icon icon="@tui.star" class="vip-icon" />
-                              VIP
-                            </span>
-                          }
-                        </div>
-                      }
+                       @case ('orderType') {
+                         <div class="order-details-cell">
+                           <div class="order-type-badge">
+                             <tui-icon icon="@tui.package" class="order-type-icon" />
+                             {{ order.orderType }}
+                           </div>
+                           @if (order.orderLabel) {
+                             <span class="order-label">{{ order.orderLabel }}</span>
+                           }
+                         </div>
+                       }
                       @case ('billTo') {
                         <div class="billing-details">
                           <span class="bill-to">{{ formatCellValue(order.billTo) }}</span>
@@ -480,23 +476,49 @@
                           {{ formatDate(order.chargedOn) }}
                         }
                       }
-                      @case ('action') {
-                        <div class="actions-cell">
-                          @if (order.action !== 'No Actions Supported') {
-                            <button class="action-button" type="button">
-                              <tui-icon [icon]="getActionIcon(order.action)" class="action-icon" />
-                              {{ order.action }}
-                            </button>
-                          } @else {
-                            <span class="no-actions">—</span>
-                          }
-                        </div>
-                      }
+                       @case ('action') {
+                         <div class="actions-cell">
+                           @if (order.action && !order.action.includes('No Actions')) {
+                             <div class="action-items">
+                               @for (action of order.action.split('\n'); track action) {
+                                 @if (action.trim()) {
+                                   <button class="action-button" type="button" [title]="action.trim()">
+                                     <tui-icon icon="@tui.arrow-right" class="action-icon" />
+                                     {{ action.trim() }}
+                                   </button>
+                                 }
+                               }
+                             </div>
+                           } @else if (order.action) {
+                             <span class="no-actions">No actions</span>
+                           } @else {
+                             <span class="no-actions">—</span>
+                           }
+                         </div>
+                       }
                       @case ('changeRequest') {
                         {{ formatCellValue(order.changeRequest) }}
                       }
                        @case ('csTask') {
-                         {{ formatCellValue(order.csTask) }}
+                         @if (order.csTask) {
+                           <div class="cs-task-cell">
+                             <span class="cs-task-id">{{ order.csTask.id }}</span>
+                             <button class="cs-task-status-btn" [class]="'cs-task-status-btn--' + order.csTask.status.toLowerCase()" type="button">
+                               {{ order.csTask.status }}
+                             </button>
+                             @if (order.csTask.assignedDoctor) {
+                               <button class="cs-task-doctor-btn" type="button">
+                                 {{ order.csTask.assignedDoctor }}
+                               </button>
+                             } @else {
+                               <button class="cs-task-unassigned-btn" type="button">
+                                 Not assigned
+                               </button>
+                             }
+                           </div>
+                         } @else {
+                           —
+                         }
                        }
                        @case ('orderStatus') {
                          <div class="order-status-badge" [class]="'order-status-' + order.orderStatus">

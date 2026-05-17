@@ -46,8 +46,8 @@ export class OrdersPageComponent {
 
   // Pagination
   readonly currentPage = signal(1);
-  readonly pageSize = signal(10);
-  readonly pageSizeOptions = [10, 25, 50, 100];
+  readonly pageSize = signal(5);
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
 
   // Sorting
   readonly sortField = signal<SortField>(null);
@@ -328,6 +328,14 @@ export class OrdersPageComponent {
   });
 
   constructor() {
+    // Expand all sub-services by default
+    effect(() => {
+      const orderIds = this.allOrders()
+        .filter(order => order.subServices.length > 0)
+        .map(order => order.id);
+      this.expandedOrders.set(new Set(orderIds));
+    });
+
     // Reset to page 1 when filters change
     effect(() => {
       this.searchQuery();
@@ -609,6 +617,12 @@ export class OrdersPageComponent {
       case 'archiveDate':
       case 'chargedOn':
         return this.formatDate(String(value));
+      case 'csTask':
+        if (value && typeof value === 'object' && 'id' in value) {
+          const task = value as any;
+          return `${task.id} (${task.status}${task.assignedDoctor ? ` - ${task.assignedDoctor}` : ''})`;
+        }
+        return this.formatCellValue(value);
       default:
         return this.formatCellValue(value);
     }

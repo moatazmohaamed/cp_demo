@@ -1,11 +1,24 @@
 import { Order } from '../models/order.model';
 import { SubService } from '../models/sub-service.model';
+import { CsTask } from '../models/order.model';
 
 function subSvc(
   id: number, name: string, qty: number, price: number,
   status: string, assigned: string, due: string, completed: string, notes: string
 ): SubService {
   return { id, name, quantity: qty, unitPrice: price, status, assignedTo: assigned, dueDate: due, completedDate: completed, notes };
+}
+
+function csTask(
+  id: string, status: 'Assigned' | 'Revised' | 'Undo', assignedDoctor?: string
+): CsTask {
+  return { 
+    id, 
+    status, 
+    assignedDoctor,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
 }
 
 // Enhanced Order Factory with default values for new complex fields
@@ -157,7 +170,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: 'No Updates',
     updateStatus: 'No Updates',
     chargedOn: '2025-04-28',
-    action: 'No Actions Supported',
+    action: 'Awaiting Model\nUpload STL',
     changeRequest: '',
     csTask: null,
     orderStatus: 'completed',
@@ -198,7 +211,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: 'No Updates',
     updateStatus: 'No Updates',
     chargedOn: '2025-04-28',
-    action: 'No Actions Supported',
+    action: 'No Scans Uploaded\nUpload',
     changeRequest: '',
     csTask: null,
     orderStatus: 'completed',
@@ -239,7 +252,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Update STL\nDownload Scan\nUpload Reg File',
     changeRequest: '',
     csTask: null,
     paymentStatus: 'partial',
@@ -277,7 +290,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Download Scan\nUpload\nFT schedule',
     changeRequest: '',
     csTask: null,
     subServices: []
@@ -306,9 +319,9 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '2025-04-28T09:15:00-04:00',
     updateStatus: 'Updated',
     chargedOn: '2025-04-28',
-    action: 'Reprint',
+    action: 'Download Scan\nUpdate FT Done',
     changeRequest: 'CR-441',
-    csTask: 'CS-109',
+    csTask: csTask('CS-109', 'Assigned', 'Dr. Maria G.'),
     subServices: [
       subSvc(1, 'Digital Impression', 1, 20, 'Completed', 'Mona L.', '2025-04-26', '2025-04-26', ''),
       subSvc(2, 'CAD Modeling', 1, 35, 'Completed', 'Omar F.', '2025-04-27', '2025-04-27', ''),
@@ -342,9 +355,9 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Awaiting Model\nUpload STL',
     changeRequest: '',
-    csTask: 'CS-110',
+    csTask: csTask('CS-110', 'Revised'),
     subServices: [
       subSvc(1, 'Digital Scan', 1, 18, 'Completed', 'Yara N.', '2025-04-25', '2025-04-25', ''),
       subSvc(2, 'CAD Design', 2, 30, 'Pending', '—', '2025-04-29', '', 'Waiting for doctor approval'),
@@ -374,7 +387,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '2025-04-26T10:00:00-04:00',
     updateStatus: 'Updated',
     chargedOn: '2025-04-26',
-    action: 'Reorder',
+    action: 'No Scans Uploaded\nUpload',
     changeRequest: '',
     csTask: null,
     subServices: [
@@ -409,9 +422,9 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Update STL\nDownload Scan\nUpload Reg File',
     changeRequest: 'CR-438',
-    csTask: 'CS-107',
+    csTask: csTask('CS-107', 'Assigned', 'Dr. Hossam E.'),
     subServices: [
       subSvc(1, 'Intraoral Scan', 1, 25, 'Completed', 'Hossam E.', '2025-04-22', '2025-04-22', ''),
       subSvc(2, 'Treatment Planning', 1, 50, 'Completed', 'Dr. Youssef', '2025-04-23', '2025-04-23', ''),
@@ -446,7 +459,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Download Scan\nUpload\nFT schedule',
     changeRequest: '',
     csTask: null,
     subServices: []
@@ -475,7 +488,7 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Download Scan\nUpdate FT Done',
     changeRequest: '',
     csTask: null,
     subServices: []
@@ -504,9 +517,9 @@ export const MOCK_ORDERS: Order[] = [
     updateTime: '',
     updateStatus: 'No Updates',
     chargedOn: '',
-    action: '',
+    action: 'Shipped #52122577 on FedEx\nEdit Shipment',
     changeRequest: '',
-    csTask: null,
+    csTask: csTask('CS-122', 'Assigned'),
     subServices: []
   }),
 ];
