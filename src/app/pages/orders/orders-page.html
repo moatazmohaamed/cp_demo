@@ -347,16 +347,22 @@
                   <td>
                     @switch (col.key) {
                        @case ('id') {
-                         <div class="order-id-cell">
-                           <a class="order-id-link">#{{ order.id }}</a>
-                           @if (order.isVip) {
-                             <span class="vip-badge-under-id">
-                               <tui-icon icon="@tui.star" class="vip-icon" />
-                               VIP
-                             </span>
-                           }
-                         </div>
-                       }
+                          <div class="order-id-cell">
+                            <a class="order-id-link">#{{ order.id }}</a>
+                            <div class="order-id-meta-line">
+                              @if (order.isVip) {
+                                <span class="vip-badge-under-id">
+                                  <tui-icon icon="@tui.star" class="vip-icon" />
+                                  VIP
+                                </span>
+                              }
+                              <span class="order-source-badge" [class]="getOrderSourceColor(order.orderSource)">
+                                <tui-icon [icon]="getOrderSourceIcon(order.orderSource)" class="order-source-icon" />
+                                via {{ order.orderSource }}
+                              </span>
+                            </div>
+                          </div>
+                        }
                       @case ('scanCenter') {
                         {{ formatCellValue(order.scanCenter) }}
                       }
@@ -598,7 +604,12 @@
                           @for (svc of order.subServices; track svc.id) {
                             <tr class="sub-service-item">
                               <td class="sub-svc-col-id">{{ svc.id }}</td>
-                              <td class="sub-svc-col-name">{{ svc.name }}</td>
+                              <td class="sub-svc-col-name">
+                                <span class="sub-svc-name-chip">
+                                  <span class="sub-svc-name-dot"></span>
+                                  {{ svc.name }}
+                                </span>
+                              </td>
                               <td class="sub-svc-col-qty">{{ svc.quantity }}</td>
                               <td class="sub-svc-col-price">{{ svc.unitPrice | currency:'USD':'symbol':'1.0-0' }}</td>
                               <td class="sub-svc-col-total">{{ svc.unitPrice * svc.quantity | currency:'USD':'symbol':'1.0-0' }}</td>

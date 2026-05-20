@@ -25,6 +25,7 @@ export interface Order {
   archiveDate: string;
   orderType: string;
   orderLabel: string;
+  orderSource: 'Connect' | 'CP' | 'Central Tool' | 'Connect+';  // Where the order was created from
 
   // ========== PATIENT/CLINICAL DATA ==========
   maxillary: string | null;

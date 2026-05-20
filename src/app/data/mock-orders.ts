@@ -25,6 +25,8 @@ function csTask(
 function createOrder(base: any): Order {
   return {
     ...base,
+    // Order Source (where the order was created from)
+    orderSource: base.orderSource || 'CP',
     // Enhanced Status Tracking (defaults if not provided)
     orderStatus: base.orderStatus || 'processing',
     statusHistory: base.statusHistory || [],
@@ -148,6 +150,7 @@ function createOrder(base: any): Order {
 export const MOCK_ORDERS: Order[] = [
   createOrder({
     id: 551212,
+    orderSource: 'Connect+',
     scanCenter: 'None',
     doctor: 'Dr. Faraje - Novadontics',
     patientName: 'FName(2077) LName(2077)',
@@ -189,6 +192,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521582,
+    orderSource: 'Connect',
     scanCenter: 'None',
     doctor: 'Dr. Faraje - Novadontics',
     patientName: 'FName(2077) LName(2077)',
@@ -230,6 +234,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521581,
+    orderSource: 'Central Tool',
     scanCenter: '',
     doctor: 'Dr. Faraje — Novadontics',
     patientName: 'John Mitchell',
@@ -268,6 +273,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521579,
+    orderSource: 'CP',
     scanCenter: 'Cairo Scan',
     doctor: 'Dr. Faraje — Novadontics',
     patientName: 'Sara Bennett',
@@ -297,6 +303,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521578,
+    orderSource: 'Connect+',
     scanCenter: '',
     doctor: 'Dr. El-Sayed — SmileCare',
     patientName: 'Omar Hassan',
@@ -333,6 +340,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521571,
+    orderSource: 'Connect',
     scanCenter: 'Alexandria Lab',
     doctor: 'Dr. Nour — BrightSmile',
     patientName: 'Layla Khalil',
@@ -365,6 +373,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521565,
+    orderSource: 'Central Tool',
     scanCenter: 'Giza Center',
     doctor: 'Dr. Ramadan — DentaPlus',
     patientName: 'Karim Mostafa',
@@ -400,6 +409,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521558,
+    orderSource: 'CP',
     scanCenter: '',
     doctor: 'Dr. Youssef — OralArt',
     patientName: 'Nadia Farouk',
@@ -437,6 +447,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521580,
+    orderSource: 'Connect+',
     scanCenter: '',
     doctor: 'Dr. Faraje — Novadontics',
     patientName: 'John Mitchell',
@@ -466,6 +477,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 521577,
+    orderSource: 'Connect',
     scanCenter: 'Cairo Scan',
     doctor: 'Dr. Faraje — Novadontics',
     patientName: 'Sara Bennett',
@@ -495,6 +507,7 @@ export const MOCK_ORDERS: Order[] = [
   }),
   createOrder({
     id: 52122577,
+    orderSource: 'Central Tool',
     scanCenter: 'Cairo Scan',
     doctor: 'Dr. Faraje — Novadontics',
     patientName: 'Sara Bennett',

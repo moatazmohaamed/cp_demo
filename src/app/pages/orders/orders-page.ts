@@ -529,6 +529,36 @@ export class OrdersPageComponent {
     }
   }
 
+  getOrderSourceIcon(source: string): string {
+    switch (source) {
+      case 'Connect':
+        return '@tui.link';
+      case 'CP':
+        return '@tui.settings';
+      case 'Central Tool':
+        return '@tui.server';
+      case 'Connect+':
+        return '@tui.zap';
+      default:
+        return '@tui.box';
+    }
+  }
+
+  getOrderSourceColor(source: string): string {
+    switch (source) {
+      case 'Connect':
+        return 'order-source--connect';
+      case 'CP':
+        return 'order-source--cp';
+      case 'Central Tool':
+        return 'order-source--central-tool';
+      case 'Connect+':
+        return 'order-source--connect-plus';
+      default:
+        return 'order-source--default';
+    }
+  }
+
   getVipCount(): number {
     return this.filteredAndSortedOrders().filter((order) => order.isVip).length;
   }
