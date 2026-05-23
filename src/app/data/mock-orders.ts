@@ -184,10 +184,10 @@ export const MOCK_ORDERS: Order[] = [
       { id: 'h3', status: 'completed', timestamp: 'Mon Apr 28 26 15:45:00 -0400', changedBy: 'Mohamed T.', reason: 'Quality check passed', reasonCode: 'QUALITY_CHECK_PASSED', notes: 'Ready to ship' }
     ],
     subServices: [
-      subSvc(1, 'Impression Scan', 1, 15, 'Completed', 'Ahmed R.', '2025-04-26', '2025-04-26', ''),
-      subSvc(2, 'Model Design', 1, 12, 'Completed', 'Sara K.', '2025-04-27', '2025-04-27', ''),
-      subSvc(3, 'Quality Check', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
-      subSvc(4, 'Packaging', 1, 8, 'Completed', 'Team', '2025-04-28', '2025-04-28', ''),
+      subSvc(1, 'Leaser Scan', 1, 15, 'Completed', 'Ahmed R.', '2025-04-26', '2025-04-26', ''),
+      subSvc(2, 'Treatment Plan', 1, 12, 'Completed', 'Sara K.', '2025-04-27', '2025-04-27', ''),
+      subSvc(3, 'Surgical Guide', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
+      subSvc(4, 'Temp Restoration', 1, 8, 'Completed', 'Team', '2025-04-28', '2025-04-28', ''),
     ]
   }),
   createOrder({
@@ -226,10 +226,8 @@ export const MOCK_ORDERS: Order[] = [
       { id: 'h3', status: 'completed', timestamp: 'Mon Apr 28 26 15:45:00 -0400', changedBy: 'Mohamed T.', reason: 'Quality check passed', reasonCode: 'QUALITY_CHECK_PASSED', notes: 'Ready to ship' }
     ],
     subServices: [
-      subSvc(1, 'Impression Scan', 1, 15, 'Completed', 'Ahmed R.', '2025-04-26', '2025-04-26', ''),
-      subSvc(2, 'Model Design', 1, 12, 'Completed', 'Sara K.', '2025-04-27', '2025-04-27', ''),
-      subSvc(3, 'Quality Check', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
-      subSvc(4, 'Packaging', 1, 8, 'Completed', 'Team', '2025-04-28', '2025-04-28', ''),
+      subSvc(3, 'Surgical Guide', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
+      subSvc(4, 'Temp Restoration', 1, 8, 'Completed', 'Team', '2025-04-28', '2025-04-28', ''),
     ]
   }),
   createOrder({
@@ -331,9 +329,8 @@ export const MOCK_ORDERS: Order[] = [
     csTask: csTask('CS-109', 'Assigned', 'Dr. Maria G.'),
     subServices: [
       subSvc(1, 'Digital Impression', 1, 20, 'Completed', 'Mona L.', '2025-04-26', '2025-04-26', ''),
-      subSvc(2, 'CAD Modeling', 1, 35, 'Completed', 'Omar F.', '2025-04-27', '2025-04-27', ''),
-      subSvc(3, 'CAM Milling', 1, 25, 'Completed', 'Hany S.', '2025-04-27', '2025-04-27', ''),
-      subSvc(4, 'Sintering', 1, 15, 'Completed', 'Ali R.', '2025-04-27', '2025-04-27', ''),
+      subSvc(2, 'Treatment Plan', 1, 12, 'Completed', 'Sara K.', '2025-04-27', '2025-04-27', ''),
+      subSvc(3, 'Surgical Guide', 1, 8, 'Completed', 'Mohamed T.', '2025-04-27', '2025-04-27', ''),
       subSvc(5, 'Staining & Glazing', 1, 18, 'In Progress', 'Maria G.', '2025-04-28', '', ''),
       subSvc(6, 'Final QC', 1, 7, 'Pending', '—', '2025-04-29', '', ''),
     ]
@@ -401,9 +398,6 @@ export const MOCK_ORDERS: Order[] = [
     csTask: null,
     subServices: [
       subSvc(1, 'Impression Scan', 1, 15, 'Completed', 'Khaled M.', '2025-04-24', '2025-04-24', ''),
-      subSvc(2, 'Bridge Design', 1, 40, 'Completed', 'Dina S.', '2025-04-25', '2025-04-25', ''),
-      subSvc(3, 'Milling', 1, 28, 'Completed', 'Tamer H.', '2025-04-25', '2025-04-25', ''),
-      subSvc(4, 'Ceramic Layering', 1, 35, 'Completed', 'Noha A.', '2025-04-26', '2025-04-26', ''),
       subSvc(5, 'Finishing & QC', 1, 12, 'Completed', 'Mahmoud R.', '2025-04-26', '2025-04-26', ''),
     ]
   }),

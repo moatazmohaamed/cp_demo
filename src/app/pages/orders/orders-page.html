@@ -572,65 +572,128 @@
                   </td>
                 }
               </tr>
-              <!-- Sub-services expansion row -->
-              @if (expandedOrders().has(order.id) && order.subServices.length > 0) {
-                <tr class="sub-service-row">
-                  <td [attr.colspan]="visibleColumnCount() + 2" class="sub-service-cell">
-                    <div class="sub-service-container">
-                      <div class="sub-service-header">
-                        <tui-icon icon="@tui.list" class="sub-svc-header-icon" />
-                        <span class="sub-service-title">Sub-Services</span>
-                        <span class="sub-service-badge">{{ order.subServices.length }} items</span>
-                        <span class="sub-service-total">${{ getSubServiceTotal(order) }}</span>
-                        <span class="sub-service-progress">
-                          {{ getSubServiceStatusCount(order, 'Completed') }}/{{ order.subServices.length }} completed
-                        </span>
-                      </div>
-                      <table class="sub-service-table">
-                        <thead>
-                          <tr>
-                            <th class="sub-svc-col-id">#</th>
-                            <th class="sub-svc-col-name">Service</th>
-                            <th class="sub-svc-col-qty">Qty</th>
-                            <th class="sub-svc-col-price">Unit Price</th>
-                            <th class="sub-svc-col-total">Total</th>
-                            <th class="sub-svc-col-status">Status</th>
-                            <th class="sub-svc-col-assigned">Assigned To</th>
-                            <th class="sub-svc-col-due">Due Date</th>
-                            <th class="sub-svc-col-notes">Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @for (svc of order.subServices; track svc.id) {
-                            <tr class="sub-service-item">
-                              <td class="sub-svc-col-id">{{ svc.id }}</td>
-                              <td class="sub-svc-col-name">
-                                <span class="sub-svc-name-chip">
-                                  <span class="sub-svc-name-dot"></span>
-                                  {{ svc.name }}
-                                </span>
-                              </td>
-                              <td class="sub-svc-col-qty">{{ svc.quantity }}</td>
-                              <td class="sub-svc-col-price">{{ svc.unitPrice | currency:'USD':'symbol':'1.0-0' }}</td>
-                              <td class="sub-svc-col-total">{{ svc.unitPrice * svc.quantity | currency:'USD':'symbol':'1.0-0' }}</td>
-                              <td class="sub-svc-col-status">
-                                <span class="sub-status-badge" [class.sub-status--completed]="svc.status === 'Completed'"
-                                  [class.sub-status--pending]="svc.status === 'Pending'"
-                                  [class.sub-status--in-progress]="svc.status === 'In Progress'">
-                                  {{ svc.status }}
-                                </span>
-                              </td>
-                              <td class="sub-svc-col-assigned">{{ svc.assignedTo }}</td>
-                              <td class="sub-svc-col-due">{{ svc.dueDate ? (svc.dueDate | date:'MMM d') : '—' }}</td>
-                              <td class="sub-svc-col-notes">{{ svc.notes || '—' }}</td>
-                            </tr>
-                          }
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              }
+               <!-- Sub-services expansion row -->
+               @if (expandedOrders().has(order.id) && order.subServices.length > 0) {
+                 <tr class="sub-service-row">
+                   <td [attr.colspan]="visibleColumnCount() + 2" class="sub-service-cell">
+                     <div class="sub-service-expanded-container">
+                       <!-- Section Header -->
+                       <div class="sub-service-expanded-header">
+                         <div class="sub-service-expanded-left">
+                           <tui-icon icon="@tui.list-details" class="sub-service-expanded-icon" />
+                           <span class="sub-service-expanded-label">Sub-Services</span>
+                           <span class="sub-service-expanded-badge">{{ order.subServices.length }} items</span>
+                         </div>
+                         <div class="sub-service-expanded-right">
+                           <span class="sub-service-expanded-progress-text">
+                             {{ getSubServiceStatusCount(order, 'Completed') }}/{{ order.subServices.length }} done
+                           </span>
+                           <div class="sub-service-expanded-progress-bar-wrapper">
+                             <div 
+                               class="sub-service-expanded-progress-bar"
+                               [style.width.%]="getSubServiceProgressPercent(order)"
+                             ></div>
+                           </div>
+                           <span 
+                             class="sub-service-expanded-percentage"
+                             [class.is-complete]="getSubServiceProgressPercent(order) === 100"
+                           >
+                             {{ getSubServiceProgressPercent(order) }}%
+                           </span>
+                         </div>
+                       </div>
+
+                       <!-- Cards Grid -->
+                       <div class="sub-service-cards-grid">
+                         @for (svc of order.subServices; track svc.id; let i = $index) {
+                           <div class="sub-service-card" [class]="getAccentBarColor(svc.status)">
+                             <!-- Card Header -->
+                             <div class="sub-service-card-header">
+                               <span class="sub-service-card-id">#{{ formatCardIndex(i) }}</span>
+                               <span class="sub-service-card-status-badge" [class]="getStatusBadgeClass(svc.status)">
+                                 {{ svc.status }}
+                               </span>
+                             </div>
+
+                             <!-- Service Name -->
+                             <div class="sub-service-card-name">
+                               <span class="sub-service-card-name-dot"></span>
+                               {{ svc.name }}
+                             </div>
+
+                             <!-- Meta Row -->
+                             <div class="sub-service-card-meta">
+                               <div class="sub-service-card-meta-item">
+                                 <tui-icon icon="@tui.box" />
+                                 Qty: {{ svc.quantity }}
+                               </div>
+                               <div class="sub-service-card-meta-item">
+                                 <tui-icon icon="@tui.tag" />
+                                 {{ svc.unitPrice | currency:'USD':'symbol':'1.0-0' }}/unit
+                               </div>
+                             </div>
+
+                             <!-- Price Block -->
+                             <div class="sub-service-card-price">
+                               <div class="sub-service-card-price-main">
+                                 {{ svc.unitPrice * svc.quantity | currency:'USD':'symbol':'1.0-0' }}
+                               </div>
+                               <div class="sub-service-card-price-sub">
+                                 Total ({{ svc.quantity }} × {{ svc.unitPrice | currency:'USD':'symbol':'1.0-0' }})
+                               </div>
+                             </div>
+
+                             <!-- Assignee Footer -->
+                             <div class="sub-service-card-footer">
+                               <div class="sub-service-card-avatar">
+                                 {{ getSubServiceInitials(svc.assignedTo) }}
+                               </div>
+                               <span class="sub-service-card-assignee" [title]="svc.assignedTo">
+                                 {{ svc.assignedTo || '—' }}
+                               </span>
+                               @if (svc.dueDate) {
+                                 <div 
+                                   class="sub-service-card-due-date"
+                                   [class.is-overdue]="isSubServiceOverdue(svc)"
+                                 >
+                                   <tui-icon icon="@tui.calendar" />
+                                   {{ svc.dueDate | date:'MMM d' }}
+                                 </div>
+                               }
+                             </div>
+                           </div>
+                         }
+                       </div>
+
+                       <!-- Summary Bar -->
+                       <div class="sub-service-summary-bar">
+                         <span class="sub-service-summary-label">Sub-Services Total</span>
+                         <div class="sub-service-summary-stats">
+                           <div class="sub-service-summary-stat">
+                             <div class="sub-service-summary-stat-value">{{ order.subServices.length }}</div>
+                             <div class="sub-service-summary-stat-label">Services</div>
+                           </div>
+                           <div class="sub-service-summary-stat">
+                             <div class="sub-service-summary-stat-value stat-done">
+                               {{ getSubServiceStatusCount(order, 'Completed') }}
+                             </div>
+                             <div class="sub-service-summary-stat-label">Done</div>
+                           </div>
+                           <div class="sub-service-summary-stat">
+                             <div class="sub-service-summary-stat-value stat-in-progress">
+                               {{ getSubServiceInProgressCount(order) }}
+                             </div>
+                             <div class="sub-service-summary-stat-label">In Progress</div>
+                           </div>
+                         </div>
+                         <div class="sub-service-summary-total">
+                           {{ getSubServiceTotal(order) | currency:'USD':'symbol':'1.0-0' }}
+                         </div>
+                       </div>
+                     </div>
+                   </td>
+                 </tr>
+               }
             }
           }
         </tbody>

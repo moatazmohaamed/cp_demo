@@ -8,4 +8,6 @@ export interface SubService {
   dueDate: string;
   completedDate: string;
   notes: string;
+  assigneeInitials?: string;
+  overdue?: boolean;
 }

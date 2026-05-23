@@ -2268,3 +2268,420 @@
     flex-shrink: 0;
   }
 }
+
+/* ─────────────────────────────────── */
+/* SUB-SERVICES CARD GRID REDESIGN */
+/* ─────────────────────────────────── */
+
+/* Animations */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width, 100%);
+  }
+}
+
+/* Expanded sub-services container */
+.sub-service-expanded-container {
+  padding: 16px 16px 16px 52px;
+  background: var(--dx-bg-page);
+}
+
+/* Section header with flex layout */
+.sub-service-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sub-service-expanded-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+}
+
+.sub-service-expanded-icon {
+  font-size: 14px;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.sub-service-expanded-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--dx-text-secondary);
+}
+
+.sub-service-expanded-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 8px;
+  border-radius: 20px;
+  background: var(--dx-bg-surface);
+  border: 1px solid var(--dx-border-default);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--dx-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sub-service-expanded-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.sub-service-expanded-progress-text {
+  font-size: 11px;
+  color: var(--dx-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sub-service-expanded-progress-bar-wrapper {
+  width: 80px;
+  height: 4px;
+  background: var(--dx-border-default);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sub-service-expanded-progress-bar {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.sub-service-expanded-percentage {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dx-text-secondary);
+  min-width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+
+  &.is-complete {
+    color: #22c55e;
+  }
+}
+
+/* Cards grid */
+.sub-service-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual card */
+.sub-service-card {
+  position: relative;
+  border-radius: 10px;
+  padding: 12px;
+  padding-left: 15px;
+  background: var(--dx-bg-surface);
+  border: 1px solid var(--dx-border-default);
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  animation: fadeSlideUp 0.2s ease forwards;
+
+  /* Staggered animation */
+  &:nth-child(1) { animation-delay: 0s; }
+  &:nth-child(2) { animation-delay: 0.05s; }
+  &:nth-child(3) { animation-delay: 0.1s; }
+  &:nth-child(4) { animation-delay: 0.15s; }
+  &:nth-child(5) { animation-delay: 0.2s; }
+  &:nth-child(6) { animation-delay: 0.25s; }
+  &:nth-child(7) { animation-delay: 0.3s; }
+  &:nth-child(8) { animation-delay: 0.35s; }
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--dx-border-medium);
+  }
+
+  /* Left accent bar */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 10px 0 0 10px;
+    transition: background-color 0.2s ease;
+  }
+
+  &.accent-bar--completed::before {
+    background: #22c55e;
+  }
+
+  &.accent-bar--in-progress::before {
+    background: #60a5fa;
+  }
+
+  &.accent-bar--pending::before {
+    background: #f59e0b;
+  }
+}
+
+/* Card header */
+.sub-service-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.sub-service-card-id {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: var(--dx-text-hint);
+}
+
+.sub-service-card-status-badge {
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.sub-service-card-status-badge.status-pill--completed {
+  background: rgba(34, 197, 94, 0.09);
+  border-color: rgba(34, 197, 94, 0.13);
+  color: #22c55e;
+}
+
+.sub-service-card-status-badge.status-pill--in-progress {
+  background: rgba(96, 165, 250, 0.09);
+  border-color: rgba(96, 165, 250, 0.13);
+  color: #60a5fa;
+}
+
+.sub-service-card-status-badge.status-pill--pending {
+  background: rgba(245, 158, 11, 0.09);
+  border-color: rgba(245, 158, 11, 0.13);
+  color: #f59e0b;
+}
+
+/* Service name */
+.sub-service-card-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dx-text-primary);
+}
+
+.sub-service-card-name-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00d4aa;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Meta row */
+.sub-service-card-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--dx-text-secondary);
+}
+
+.sub-service-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+
+  tui-icon {
+    font-size: 12px;
+  }
+}
+
+/* Price block */
+.sub-service-card-price {
+  margin-top: 8px;
+}
+
+.sub-service-card-price-main {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: var(--dx-text-primary);
+}
+
+.sub-service-card-price-sub {
+  font-size: 10px;
+  color: var(--dx-text-secondary);
+  margin-top: 1px;
+}
+
+/* Assignee footer */
+.sub-service-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--dx-border-light);
+}
+
+.sub-service-card-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: rgba(96, 165, 250, 0.09);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: #60a5fa;
+  flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.sub-service-card-assignee {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dx-text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-service-card-due-date {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--dx-text-secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  tui-icon {
+    font-size: 10px;
+  }
+
+  &.is-overdue {
+    color: #f43f5e;
+  }
+}
+
+/* Summary bar */
+.sub-service-summary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--dx-bg-surface);
+  border: 1px solid var(--dx-border-default);
+  border-radius: 8px;
+  font-size: 11px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sub-service-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--dx-text-secondary);
+  flex-shrink: 0;
+}
+
+.sub-service-summary-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sub-service-summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.sub-service-summary-stat-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--dx-text-primary);
+
+  &.stat-done {
+    color: #22c55e;
+  }
+
+  &.stat-in-progress {
+    color: #f59e0b;
+  }
+}
+
+.sub-service-summary-stat-label {
+  font-size: 10px;
+  color: var(--dx-text-secondary);
+}
+
+.sub-service-summary-total {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: #00d4aa;
+  flex-shrink: 0;
+}

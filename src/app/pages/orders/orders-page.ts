@@ -95,6 +95,70 @@ export class OrdersPageComponent {
     return order.subServices.filter((s) => s.status === status).length;
   }
 
+  // ========== Sub-Service Card Methods ==========
+  getSubServiceInitials(assignedTo: string): string {
+    if (!assignedTo || assignedTo === '—') return '—';
+    const parts = assignedTo.trim().split(' ');
+    return parts.map((part) => part.charAt(0).toUpperCase()).slice(0, 2).join('');
+  }
+
+  isSubServiceOverdue(svc: any): boolean {
+    if (!svc.dueDate) return false;
+    try {
+      const dueDate = new Date(svc.dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      dueDate.setHours(0, 0, 0, 0);
+      return svc.status !== 'Completed' && dueDate < today;
+    } catch {
+      return false;
+    }
+  }
+
+  getAccentBarColor(status: string): string {
+    switch (status) {
+      case 'Completed':
+        return 'accent-bar--completed';
+      case 'In Progress':
+        return 'accent-bar--in-progress';
+      case 'Pending':
+        return 'accent-bar--pending';
+      default:
+        return 'accent-bar--pending';
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'Completed':
+        return 'status-pill--completed';
+      case 'In Progress':
+        return 'status-pill--in-progress';
+      case 'Pending':
+        return 'status-pill--pending';
+      default:
+        return 'status-pill--pending';
+    }
+  }
+
+  getSubServiceProgressPercent(order: Order): number {
+    if (order.subServices.length === 0) return 0;
+    const completed = this.getSubServiceStatusCount(order, 'Completed');
+    return Math.round((completed / order.subServices.length) * 100);
+  }
+
+  getSubServiceInProgressCount(order: Order): number {
+    return order.subServices.filter((s) => s.status === 'In Progress').length;
+  }
+
+  getSubServicePendingCount(order: Order): number {
+    return order.subServices.filter((s) => s.status === 'Pending').length;
+  }
+
+  formatCardIndex(index: number): string {
+    return String(index + 1).padStart(2, '0');
+  }
+
   // ========== Status History Modal Methods ==========
   openStatusHistoryModal(order: Order): void {
     this.selectedOrderForModal.set(order);
