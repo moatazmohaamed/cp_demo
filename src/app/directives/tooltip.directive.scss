@@ -1,49 +1,95 @@
+/* ===== Improved Tooltip Styles ===== */
+
 .app-tooltip {
   position: fixed;
-  padding: 8px 12px;
-  background: #1e1e2e;
-  color: #ffffff;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #2a2f3f 0%, #1e2330 100%);
+  color: #f5f7fa;
   font-size: 12px;
-  line-height: 1.4;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  border-radius: 8px;
   white-space: normal;
-  max-width: 200px;
+  max-width: 280px;
   word-wrap: break-word;
   z-index: 10000;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0.85) translateY(0);
+  transform-origin: center bottom;
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Enhanced shadow with multiple layers for depth */
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    0 15px 40px rgba(0, 0, 0, 0.2);
+  
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   
   &.visible {
     opacity: 1;
+    transform: scale(1) translateY(0);
   }
 
-  // Arrow pointer styling
+  /* Modern arrow pointer with shadow */
   &::before {
     content: '';
     position: absolute;
     width: 8px;
     height: 8px;
-    background: #1e1e2e;
+    background: linear-gradient(135deg, #2a2f3f 0%, #1e2330 100%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
     transform: rotate(45deg);
+    box-shadow: 
+      -2px -2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  // Top positioned tooltip
+  /* Top positioned tooltip with smooth scale origin */
   &--top {
+    transform-origin: center bottom;
+    
     &::before {
-      bottom: -4px;
+      bottom: -4.5px;
       left: 50%;
       transform: translateX(-50%) rotate(45deg);
+    }
+    
+    &.visible {
+      transform: scale(1) translateY(-4px);
     }
   }
 
-  // Bottom positioned tooltip
+  /* Bottom positioned tooltip with smooth scale origin */
   &--bottom {
+    transform-origin: center top;
+    
     &::before {
-      top: -4px;
+      top: -4.5px;
       left: 50%;
       transform: translateX(-50%) rotate(45deg);
     }
+    
+    &.visible {
+      transform: scale(1) translateY(4px);
+    }
+  }
+
+  /* Improved readability with better spacing */
+  ::selection {
+    background: rgba(255, 255, 255, 0.2);
+    color: #f5f7fa;
+  }
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .app-tooltip {
+    max-width: 220px;
+    padding: 8px 12px;
+    font-size: 11px;
   }
 }
