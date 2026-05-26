@@ -10,4 +10,9 @@
 .app-main {
   flex: 1;
   overflow-x: hidden;
+
+  &--full {
+    display: flex;
+    flex-direction: column;
+  }
 }

@@ -1,7 +1,9 @@
 <tui-root>
   <div class="app-shell">
-    <app-header />
-    <main class="app-main">
+    @if (!isLoginPage) {
+      <app-header />
+    }
+    <main class="app-main" [class.app-main--full]="isLoginPage">
       <router-outlet />
     </main>
   </div>

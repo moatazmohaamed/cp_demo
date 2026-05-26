@@ -1,0 +1,1923 @@
+<div class="add-order-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-title">
+        Add Order
+        @if (isRush) {
+          <span class="rush-badge">RUSH</span>
+        }
+      </h1>
+    </div>
+    <div class="page-header__right">
+      <button type="button" class="btn btn--outline" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="button" class="btn btn--primary" (click)="onSubmit()">
+        Save Order
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="order-form">
+    <!-- Section 1: Case Info -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">CASE INFO</h2>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-content">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Scanning Center <span class="required">*</span>
+            </label>
+            <select class="form-control" formControlName="scanningCenter">
+              <option value="">Select scanning center</option>
+              @for (center of scanCenters; track center) {
+                <option [value]="center">{{ center }}</option>
+              }
+            </select>
+            @if (getErrorMessage('scanningCenter')) {
+              <span class="error-message">{{ getErrorMessage('scanningCenter') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Doctor <span class="required">*</span>
+            </label>
+            <select class="form-control" formControlName="doctor">
+              <option value="">Select doctor</option>
+              @for (doctor of doctors; track doctor) {
+                <option [value]="doctor">{{ doctor }}</option>
+              }
+            </select>
+            @if (getErrorMessage('doctor')) {
+              <span class="error-message">{{ getErrorMessage('doctor') }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Client to Be Billed <span class="required">*</span>
+            </label>
+            <div class="bill-toggle-group">
+              <label class="bill-toggle" [class.bill-toggle--selected]="form.get('clientToBeBilled')?.value === 'doctor'">
+                <input type="radio" formControlName="clientToBeBilled" value="doctor" />
+                <tui-icon icon="@tui.user" class="bill-toggle__icon" />
+                <span class="bill-toggle__label">Doctor</span>
+              </label>
+              <label class="bill-toggle" [class.bill-toggle--selected]="form.get('clientToBeBilled')?.value === 'scanningCenter'">
+                <input type="radio" formControlName="clientToBeBilled" value="scanningCenter" />
+                <tui-icon icon="@tui.scan" class="bill-toggle__icon" />
+                <span class="bill-toggle__label">Scanning Center</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Patient Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="patientName"
+              placeholder="Enter patient name"
+            />
+            @if (getErrorMessage('patientName')) {
+              <span class="error-message">{{ getErrorMessage('patientName') }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Select Orders -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">SELECT ORDERS</h2>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-content">
+        <div class="order-type-grid">
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('modelRegistration')?.value">
+            <input type="checkbox" formControlName="modelRegistration" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.scan" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Model Registration</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('conversion')?.value">
+            <input type="checkbox" formControlName="conversion" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.refresh-cw" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Conversion</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('treatmentPlan')?.value">
+            <input type="checkbox" formControlName="treatmentPlan" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.clipboard-list" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Treatment Plan</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('surgicalGuide')?.value">
+            <input type="checkbox" formControlName="surgicalGuide" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.crosshair" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Surgical Guide</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('tempRestorations')?.value">
+            <input type="checkbox" formControlName="tempRestorations" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.clock" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Temp Restorations</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('finalRestorations')?.value">
+            <input type="checkbox" formControlName="finalRestorations" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.award" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Final Restorations</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('report')?.value">
+            <input type="checkbox" formControlName="report" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.file-text" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Report</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('otherServices')?.value">
+            <input type="checkbox" formControlName="otherServices" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.grid" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Other Services</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+
+          <label class="order-type-card" [class.order-type-card--selected]="form.get('misc')?.value">
+            <input type="checkbox" formControlName="misc" />
+            <div class="order-type-card__icon">
+              <tui-icon icon="@tui.more-horizontal" />
+            </div>
+            <div class="order-type-card__body">
+              <span class="order-type-card__name">Misc</span>
+            </div>
+            <div class="order-type-card__check">
+              <tui-icon icon="@tui.check" />
+            </div>
+          </label>
+        </div>
+
+        <!-- Conditional Panels -->
+        @if (showModelRegistrationPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Model Registration Order</h3>
+              <div class="tp-subtitle">Configure model registration options</div>
+            </div>
+
+            <!-- Tooth Chart -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.grid" class="tp-section-icon" />
+                Tooth Chart
+              </h4>
+
+              <!-- Upper Arch -->
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="arch-label-inline">Upper Arch (Maxilla)</div>
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-icon">
+                          <img [src]="'tooth-images/tooth' + tooth.number + '.png'" [alt]="'Tooth ' + tooth.number" class="tooth-image" />
+                        </div>
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                      </div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.implant" (change)="toggleTooth(tooth, 'implant')" />
+                      </div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.missing" (change)="toggleTooth(tooth, 'missing')" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lower Arch -->
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.missing" (change)="toggleTooth(tooth, 'missing')" />
+                      </div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.implant" (change)="toggleTooth(tooth, 'implant')" />
+                      </div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                        <div class="tooth-icon">
+                          <img [src]="'tooth-images/tooth' + tooth.number + '.png'" [alt]="'Tooth ' + tooth.number" class="tooth-image" />
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="arch-label-inline">Lower Arch (Mandible)</div>
+              </div>
+            </div>
+
+            <!-- Order Options -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.settings" class="tp-section-icon" />
+                Order Options
+              </h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+
+                <!-- Has Intraoral Scan -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Has Intraoral Scan?</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegHasIntraoralScan')?.value === 'no'">
+                      <input type="radio" formControlName="modelRegHasIntraoralScan" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegHasIntraoralScan')?.value === 'yes'">
+                      <input type="radio" formControlName="modelRegHasIntraoralScan" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Impression Scans -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Impression Scans</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegImpressionScans')?.value === 'no'">
+                      <input type="radio" formControlName="modelRegImpressionScans" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegImpressionScans')?.value === 'yes'">
+                      <input type="radio" formControlName="modelRegImpressionScans" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Redo -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Redo</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegRedo')?.value === 'no'">
+                      <input type="radio" formControlName="modelRegRedo" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('modelRegRedo')?.value === 'yes'">
+                      <input type="radio" formControlName="modelRegRedo" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="tp-total">
+              <div class="tp-total-label">Model Amount ($)</div>
+              <div class="tp-total-amount">{{ form.get('modelRegAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('modelRegAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showConversionPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Conversion Order</h3>
+              <div class="tp-subtitle">Configure conversion options and pricing</div>
+            </div>
+
+            <!-- Send Through -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.send" class="tp-section-icon" />
+                Send Through
+              </h4>
+              <div class="conv-send-group">
+                <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('conversionSendThrough')?.value === 'caseXchange'">
+                  <input type="radio" formControlName="conversionSendThrough" value="caseXchange" />
+                  <div class="tp-radio-content">
+                    <tui-icon icon="@tui.arrow-right-left" class="conv-send-icon" />
+                    <span class="tp-radio-label">caseXchange</span>
+                  </div>
+                </label>
+                <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('conversionSendThrough')?.value === 'connect'">
+                  <input type="radio" formControlName="conversionSendThrough" value="connect" />
+                  <div class="tp-radio-content">
+                    <tui-icon icon="@tui.plug" class="conv-send-icon" />
+                    <span class="tp-radio-label">Connect</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Customization -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.sliders" class="tp-section-icon" />
+                Customization
+              </h4>
+              <div class="tp-cards-grid">
+
+                <!-- Maxilla -->
+                <div class="tp-card">
+                  <div class="tp-card-header">
+                    <tui-icon icon="@tui.chevrons-up" class="tp-card-icon" />
+                    <span class="tp-card-title">Customization (Maxilla)</span>
+                  </div>
+                  <div class="tp-card-body">
+                    @for (opt of convCustomOptions; track opt.value) {
+                      <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionCustomizationMaxilla')?.value === opt.value">
+                        <input type="radio" formControlName="conversionCustomizationMaxilla" [value]="opt.value" />
+                        <span class="tp-radio-label">{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                </div>
+
+                <!-- Mandible -->
+                <div class="tp-card">
+                  <div class="tp-card-header">
+                    <tui-icon icon="@tui.chevrons-down" class="tp-card-icon" />
+                    <span class="tp-card-title">Customization (Mandible)</span>
+                  </div>
+                  <div class="tp-card-body">
+                    @for (opt of convCustomOptions; track opt.value) {
+                      <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionCustomizationMandible')?.value === opt.value">
+                        <input type="radio" formControlName="conversionCustomizationMandible" [value]="opt.value" />
+                        <span class="tp-radio-label">{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Options Row -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.settings" class="tp-section-icon" />
+                Options
+              </h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+
+                <!-- Rush -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Rush</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionRush')?.value === 'no'">
+                      <input type="radio" formControlName="conversionRush" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact tp-radio-card--rush" [class.tp-radio-card--selected]="form.get('conversionRush')?.value === 'yes'">
+                      <input type="radio" formControlName="conversionRush" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Redo -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Redo</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionRedo')?.value === 'no'">
+                      <input type="radio" formControlName="conversionRedo" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionRedo')?.value === 'yes'">
+                      <input type="radio" formControlName="conversionRedo" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Portable Version -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Portable Version</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionPortableVersion')?.value === 'no'">
+                      <input type="radio" formControlName="conversionPortableVersion" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionPortableVersion')?.value === 'yes'">
+                      <input type="radio" formControlName="conversionPortableVersion" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.activity" class="tp-section-icon" />
+                Status
+              </h4>
+              <div class="conv-status-group">
+                @for (s of convStatusOptions; track s.value) {
+                  <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('conversionStatus')?.value === s.value">
+                    <input type="radio" formControlName="conversionStatus" [value]="s.value" />
+                    <span class="tp-radio-label">{{ s.label }}</span>
+                  </label>
+                }
+                @if (form.get('conversionStatus')?.value === 'onHold') {
+                  <input
+                    type="text"
+                    class="form-control conv-reason-input"
+                    formControlName="conversionStatusReason"
+                    placeholder="Reason..."
+                  />
+                }
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="tp-total">
+              <div class="tp-total-label">Conversion Amount ($)</div>
+              <div class="tp-total-amount">{{ form.get('conversionAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('conversionAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showTreatmentPlanPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Treatment Plan Order</h3>
+              <div class="tp-subtitle">Configure treatment plan options and pricing</div>
+            </div>
+            
+            <!-- Plan Selection Cards -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.layers" class="tp-section-icon" />
+                Arch Selection
+              </h4>
+              <div class="tp-cards-grid">
+                <!-- Maxilla Card -->
+                <div class="tp-card">
+                  <div class="tp-card-header">
+                    <tui-icon icon="@tui.chevrons-up" class="tp-card-icon" />
+                    <span class="tp-card-title">Plan (Maxilla)</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMaxilla')?.value === 'none'">
+                      <input type="radio" formControlName="treatmentPlanMaxilla" value="none" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">None</span>
+                        <span class="tp-radio-price">—</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMaxilla')?.value === 'fullArch'">
+                      <input type="radio" formControlName="treatmentPlanMaxilla" value="fullArch" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Full Arch</span>
+                        <span class="tp-radio-price">+$200</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMaxilla')?.value === 'quadrant'">
+                      <input type="radio" formControlName="treatmentPlanMaxilla" value="quadrant" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Quadrant</span>
+                        <span class="tp-radio-price">+$100</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Mandible Card -->
+                <div class="tp-card">
+                  <div class="tp-card-header">
+                    <tui-icon icon="@tui.chevrons-down" class="tp-card-icon" />
+                    <span class="tp-card-title">Plan (Mandible)</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMandible')?.value === 'none'">
+                      <input type="radio" formControlName="treatmentPlanMandible" value="none" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">None</span>
+                        <span class="tp-radio-price">—</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMandible')?.value === 'fullArch'">
+                      <input type="radio" formControlName="treatmentPlanMandible" value="fullArch" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Full Arch</span>
+                        <span class="tp-radio-price">+$200</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card" [class.tp-radio-card--selected]="form.get('treatmentPlanMandible')?.value === 'quadrant'">
+                      <input type="radio" formControlName="treatmentPlanMandible" value="quadrant" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Quadrant</span>
+                        <span class="tp-radio-price">+$100</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review Options -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.file-text" class="tp-section-icon" />
+                Review Options
+              </h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+                <!-- Review Card -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Review</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReview')?.value === 'no'">
+                      <input type="radio" formControlName="treatmentPlanReview" value="no" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReview')?.value === 'yes'">
+                      <input type="radio" formControlName="treatmentPlanReview" value="yes" />
+                      <span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Review Type Card -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Review Type</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReviewType')?.value === 'none'">
+                      <input type="radio" formControlName="treatmentPlanReviewType" value="none" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">NONE</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReviewType')?.value === 'replication'">
+                      <input type="radio" formControlName="treatmentPlanReviewType" value="replication" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Replication</span>
+                        <span class="tp-radio-price-small">+$50</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReviewType')?.value === 'consultation'">
+                      <input type="radio" formControlName="treatmentPlanReviewType" value="consultation" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Consultation</span>
+                        <span class="tp-radio-price-small">+$75</span>
+                      </div>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanReviewType')?.value === 'regular'">
+                      <input type="radio" formControlName="treatmentPlanReviewType" value="regular" (change)="onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">Regular</span>
+                        <span class="tp-radio-price-small">+$100</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Rush Card -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Rush</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="!form.get('treatmentPlanRush')?.value">
+                      <input type="radio" [checked]="!form.get('treatmentPlanRush')?.value" (change)="form.patchValue({treatmentPlanRush: false}); onTreatmentPlanChange()" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact tp-radio-card--rush" [class.tp-radio-card--selected]="form.get('treatmentPlanRush')?.value">
+                      <input type="radio" [checked]="form.get('treatmentPlanRush')?.value" (change)="form.patchValue({treatmentPlanRush: true}); onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">YES</span>
+                        <span class="tp-radio-price-small">+$150</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Portable Version Card -->
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header">
+                    <span class="tp-card-title">Portable Version</span>
+                  </div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="!form.get('treatmentPlanPortableVersion')?.value">
+                      <input type="radio" [checked]="!form.get('treatmentPlanPortableVersion')?.value" (change)="form.patchValue({treatmentPlanPortableVersion: false}); onTreatmentPlanChange()" />
+                      <span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('treatmentPlanPortableVersion')?.value">
+                      <input type="radio" [checked]="form.get('treatmentPlanPortableVersion')?.value" (change)="form.patchValue({treatmentPlanPortableVersion: true}); onTreatmentPlanChange()" />
+                      <div class="tp-radio-content">
+                        <span class="tp-radio-label">YES</span>
+                        <span class="tp-radio-price-small">+$50</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Options -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.settings" class="tp-section-icon" />
+                Additional Options
+              </h4>
+              <div class="tp-inline-options">
+                <div class="tp-option-group">
+                  <label class="tp-option-label">Redo</label>
+                  <div class="tp-toggle-group">
+                    <label class="tp-toggle" [class.tp-toggle--active]="!form.get('treatmentPlanRedo')?.value">
+                      <input type="radio" [checked]="!form.get('treatmentPlanRedo')?.value" (change)="form.patchValue({treatmentPlanRedo: false})" />
+                      <span>NO</span>
+                    </label>
+                    <label class="tp-toggle" [class.tp-toggle--active]="form.get('treatmentPlanRedo')?.value">
+                      <input type="radio" [checked]="form.get('treatmentPlanRedo')?.value" (change)="form.patchValue({treatmentPlanRedo: true})" />
+                      <span>YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="tp-option-group">
+                  <label class="tp-option-label">Status</label>
+                  <select class="tp-select" formControlName="treatmentPlanStatus">
+                    <option value="noScans">No Scans</option>
+                    <option value="waitingConversion">Waiting Conversion</option>
+                    <option value="inProgress">In Progress</option>
+                    <option value="done">Done</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Fields -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.clipboard" class="tp-section-icon" />
+                Treatment Details
+              </h4>
+              <div class="tp-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">
+                    <tui-icon icon="@tui.tool" class="field-icon" />
+                    Type and Model of implant to be placed
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="treatmentPlanImplantType"
+                    placeholder="e.g., Nobel Biocare Active 4.3mm"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <tui-icon icon="@tui.box" class="field-icon" />
+                    Type of Prosthesis
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="treatmentPlanProsthesisType"
+                    placeholder="e.g., Fixed bridge, Crown"
+                  />
+                </div>
+
+                <div class="form-group form-group--full">
+                  <label class="form-label">
+                    <tui-icon icon="@tui.activity" class="field-icon" />
+                    Surgical procedures planned
+                  </label>
+                  <textarea
+                    class="form-control form-control--textarea"
+                    formControlName="treatmentPlanSurgicalProcedures"
+                    rows="3"
+                    placeholder="Describe planned surgical procedures in detail..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+     <!-- Section 6: Software & Order Settings -->
+     <div class="form-section">
+       <div class="section-header">
+         <h2 class="section-title">SOFTWARE & ORDER SETTINGS</h2>
+       </div>
+       <div class="section-divider"></div>
+       <div class="section-content">
+         <!-- Software Selection Section -->
+         <div class="settings-group">
+           <div class="settings-header">
+             <tui-icon icon="@tui.monitor" class="settings-header-icon" />
+             <div class="settings-header-text">
+               <h4 class="settings-header-title">Software Selection</h4>
+               <p class="settings-header-subtitle">Choose the software platform for this order</p>
+             </div>
+           </div>
+           <div class="software-grid">
+             <!-- Simplant Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'simplant'">
+               <input type="radio" formControlName="software" value="simplant" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.cpu" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">Simplant</div>
+                 <div class="software-desc">Advanced planning software</div>
+               </div>
+             </label>
+
+             <!-- coDiagnostiX Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'codiagnostix'">
+               <input type="radio" formControlName="software" value="codiagnostix" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.zap" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">coDiagnostiX</div>
+                 <div class="software-desc">Diagnostic imaging</div>
+               </div>
+             </label>
+
+             <!-- Real Guide Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'realguide'">
+               <input type="radio" formControlName="software" value="realguide" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.target" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">Real Guide</div>
+                 <div class="software-desc">Surgical guidance</div>
+               </div>
+             </label>
+
+             <!-- Implant Studio Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'implantstudio'">
+               <input type="radio" formControlName="software" value="implantstudio" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.layers" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">Implant Studio</div>
+                 <div class="software-desc">Implant planning</div>
+               </div>
+             </label>
+
+             <!-- NobelGuide Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'nobelguide'">
+               <input type="radio" formControlName="software" value="nobelguide" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.compass" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">NobelGuide</div>
+                 <div class="software-desc">Digital workflow</div>
+               </div>
+             </label>
+
+             <!-- BSB Card -->
+             <label class="software-card" [class.software-card--selected]="form.get('software')?.value === 'bsb'">
+               <input type="radio" formControlName="software" value="bsb" />
+               <div class="software-card-header">
+                 <div class="software-icon">
+                   <tui-icon icon="@tui.box" />
+                 </div>
+               </div>
+               <div class="software-card-body">
+                 <div class="software-name">BSB</div>
+                 <div class="software-desc">Business software</div>
+               </div>
+             </label>
+           </div>
+         </div>
+
+         <!-- Order Configuration Section -->
+         <div class="settings-group">
+           <div class="settings-header">
+             <tui-icon icon="@tui.settings" class="settings-header-icon" />
+             <div class="settings-header-text">
+               <h4 class="settings-header-title">Order Configuration</h4>
+               <p class="settings-header-subtitle">Manage order processing and delivery settings</p>
+             </div>
+           </div>
+           
+           <div class="settings-cards-container">
+             <!-- Separate Orders Card -->
+             <div class="settings-card">
+               <div class="settings-card-header">
+                 <div class="settings-card-icon">
+                   <tui-icon icon="@tui.split" />
+                 </div>
+                 <div class="settings-card-title-group">
+                   <h5 class="settings-card-title">Separate Orders</h5>
+                   <p class="settings-card-description">Split into individual orders for each arch</p>
+                 </div>
+               </div>
+               <div class="settings-card-content">
+                 <div class="settings-toggle-group">
+                   <label class="settings-toggle" [class.settings-toggle--active]="form.get('separateOrders')?.value === 'no'">
+                     <input type="radio" formControlName="separateOrders" value="no" />
+                     <span class="settings-toggle-label">No</span>
+                   </label>
+                   <label class="settings-toggle" [class.settings-toggle--active]="form.get('separateOrders')?.value === 'yes'">
+                     <input type="radio" formControlName="separateOrders" value="yes" />
+                     <span class="settings-toggle-label">Yes</span>
+                   </label>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+
+            <!-- Tooth Chart Section for Treatment Plan -->
+            <div class="tp-tooth-chart-section">
+              <h4 class="tp-section-subtitle">Tooth Chart</h4>
+              
+              <!-- Upper Arch -->
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="arch-label-inline">Upper Arch (Maxilla)</div>
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-icon">
+                          <img 
+                            [src]="'tooth-images/tooth' + tooth.number + '.png'" 
+                            [alt]="'Tooth ' + tooth.number"
+                            class="tooth-image"
+                          />
+                        </div>
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input
+                          type="checkbox"
+                          class="tooth-checkbox-inline"
+                          [checked]="tooth.implant"
+                          (change)="toggleTooth(tooth, 'implant')"
+                        />
+                      </div>
+                    }
+                  </div>
+
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input
+                          type="checkbox"
+                          class="tooth-checkbox-inline"
+                          [checked]="tooth.missing"
+                          (change)="toggleTooth(tooth, 'missing')"
+                        />
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lower Arch -->
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input
+                          type="checkbox"
+                          class="tooth-checkbox-inline"
+                          [checked]="tooth.missing"
+                          (change)="toggleTooth(tooth, 'missing')"
+                        />
+                      </div>
+                    }
+                  </div>
+
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <input
+                          type="checkbox"
+                          class="tooth-checkbox-inline"
+                          [checked]="tooth.implant"
+                          (change)="toggleTooth(tooth, 'implant')"
+                        />
+                      </div>
+                    }
+                  </div>
+
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                        <div class="tooth-icon">
+                          <img 
+                            [src]="'tooth-images/tooth' + tooth.number + '.png'" 
+                            [alt]="'Tooth ' + tooth.number"
+                            class="tooth-image"
+                          />
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="arch-label-inline">Lower Arch (Mandible)</div>
+              </div>
+            </div>
+
+            <!-- Total Amount Display -->
+            <div class="tp-total">
+              <div class="tp-total-label">Treatment Plan Amount ($)</div>
+              <div class="tp-total-amount">{{ form.get('treatmentPlanAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('treatmentPlanAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showSurgicalGuidePanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Surgical Guide Order</h3>
+              <div class="tp-subtitle">Configure surgical guide options and pricing</div>
+            </div>
+
+            <!-- Tooth Chart -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.grid" class="tp-section-icon" />
+                Tooth Chart
+              </h4>
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="arch-label-inline">Upper Arch (Maxilla)</div>
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-icon"><img [src]="'tooth-images/tooth' + tooth.number + '.png'" [alt]="'Tooth ' + tooth.number" class="tooth-image" /></div>
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                      </div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell"><input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.implant" (change)="toggleTooth(tooth, 'implant')" /></div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of upperTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell"><input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.missing" (change)="toggleTooth(tooth, 'missing')" /></div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="tooth-arch tooth-arch--compact">
+                <div class="tooth-chart-table">
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Teeth to Be Extracted</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell"><input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.missing" (change)="toggleTooth(tooth, 'missing')" /></div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row">
+                    <div class="tooth-chart-label">Implant to Be Placed</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell"><input type="checkbox" class="tooth-checkbox-inline" [checked]="tooth.implant" (change)="toggleTooth(tooth, 'implant')" /></div>
+                    }
+                  </div>
+                  <div class="tooth-chart-row tooth-chart-row--header">
+                    <div class="tooth-chart-label">Missing Teeth</div>
+                    @for (tooth of lowerTeeth; track tooth.number) {
+                      <div class="tooth-chart-cell">
+                        <div class="tooth-number">{{ tooth.number }}</div>
+                        <div class="tooth-icon"><img [src]="'tooth-images/tooth' + tooth.number + '.png'" [alt]="'Tooth ' + tooth.number" class="tooth-image" /></div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="arch-label-inline">Lower Arch (Mandible)</div>
+              </div>
+            </div>
+
+            <!-- Order Options -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.settings" class="tp-section-icon" />
+                Order Options
+              </h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Is a Real Guide?</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgIsRealGuide')?.value === 'no'">
+                      <input type="radio" formControlName="sgIsRealGuide" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgIsRealGuide')?.value === 'yes'">
+                      <input type="radio" formControlName="sgIsRealGuide" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Came Across CaseXChange?</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgCameAcrossCaseXchange')?.value === 'no'">
+                      <input type="radio" formControlName="sgCameAcrossCaseXchange" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgCameAcrossCaseXchange')?.value === 'yes'">
+                      <input type="radio" formControlName="sgCameAcrossCaseXchange" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Rush if Possible</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgRushIfPossible')?.value === 'no'">
+                      <input type="radio" formControlName="sgRushIfPossible" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact tp-radio-card--rush" [class.tp-radio-card--selected]="form.get('sgRushIfPossible')?.value === 'yes'">
+                      <input type="radio" formControlName="sgRushIfPossible" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Redo</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgRedo')?.value === 'no'">
+                      <input type="radio" formControlName="sgRedo" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgRedo')?.value === 'yes'">
+                      <input type="radio" formControlName="sgRedo" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Guide Support & Type -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.crosshair" class="tp-section-icon" />
+                Guide Configuration
+              </h4>
+              <div class="tp-cards-grid">
+
+                <div class="tp-card">
+                  <div class="tp-card-header"><span class="tp-card-title">Guide Support</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgGuideSupport')?.value === 'teeth'">
+                      <input type="radio" formControlName="sgGuideSupport" value="teeth" /><span class="tp-radio-label">Teeth</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgGuideSupport')?.value === 'tissue'">
+                      <input type="radio" formControlName="sgGuideSupport" value="tissue" /><span class="tp-radio-label">Tissue</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgGuideSupport')?.value === 'bone'">
+                      <input type="radio" formControlName="sgGuideSupport" value="bone" /><span class="tp-radio-label">Bone</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="tp-card">
+                  <div class="tp-card-header"><span class="tp-card-title">Type of Guide</span></div>
+                  <div class="tp-card-body">
+                    @for (opt of sgTypeOfGuideOptions; track opt.value) {
+                      <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgTypeOfGuide')?.value === opt.value">
+                        <input type="radio" formControlName="sgTypeOfGuide" [value]="opt.value" /><span class="tp-radio-label">{{ opt.label }}</span>
+                      </label>
+                    }
+                    @if (form.get('sgTypeOfGuide')?.value === 'compatability') {
+                      <select class="tp-select" formControlName="sgTypeOfGuideCompatability">
+                        <option value="">Select One</option>
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                      </select>
+                    }
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.clipboard" class="tp-section-icon" />
+                Guide Details
+              </h4>
+              <div class="tp-fields-grid">
+
+                <div class="form-group">
+                  <label class="form-label">Magnet (Color)</label>
+                  <select class="form-control" formControlName="sgMagnet">
+                    <option value="">-- Color --</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="yellow">Yellow</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Pilot Drill Diameter</label>
+                  <input type="text" class="form-control" formControlName="sgPilotDrillDiameter" placeholder="e.g. 2.0mm" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Extra Components</label>
+                  <input type="text" class="form-control" formControlName="sgExtraComponents" placeholder="List extra components" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Fixation Functionality ($05)</label>
+                  <div class="bill-toggle-group">
+                    <label class="bill-toggle" [class.bill-toggle--selected]="form.get('sgFixationFunctionality')?.value === 'no'">
+                      <input type="radio" formControlName="sgFixationFunctionality" value="no" />
+                      <span class="bill-toggle__label">No</span>
+                    </label>
+                    <label class="bill-toggle" [class.bill-toggle--selected]="form.get('sgFixationFunctionality')?.value === 'yes'">
+                      <input type="radio" formControlName="sgFixationFunctionality" value="yes" />
+                      <span class="bill-toggle__label">Yes</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Order ID</label>
+                  <input type="text" class="form-control" formControlName="sgOrderId" placeholder="Order ID" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Voucher</label>
+                  <input type="text" class="form-control" formControlName="sgVoucher" placeholder="Voucher code" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Date of Surgery</label>
+                  <input type="date" class="form-control" formControlName="sgDateOfSurgery" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Ship To Address</label>
+                  <select class="form-control" formControlName="sgShipToAddress">
+                    @for (opt of sgShipAddressOptions; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Estimated Delivery</label>
+                  <input type="date" class="form-control" formControlName="sgEstimatedDelivery" />
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Status of Guide -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.activity" class="tp-section-icon" />
+                Status of Guide
+              </h4>
+              <div class="conv-status-group">
+                @for (s of sgStatusOptions; track s.value) {
+                  <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('sgStatusOfGuide')?.value === s.value">
+                    <input type="radio" formControlName="sgStatusOfGuide" [value]="s.value" />
+                    <span class="tp-radio-label">{{ s.label }}</span>
+                  </label>
+                }
+                @if (form.get('sgStatusOfGuide')?.value === 'onHold') {
+                  <input type="text" class="form-control conv-reason-input" formControlName="sgStatusOfGuideReason" placeholder="Reason..." />
+                }
+              </div>
+            </div>
+
+            <!-- Digital Guide -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.monitor" class="tp-section-icon" />
+                Digital Guide
+              </h4>
+              <div class="sg-digital-row">
+                <span class="sg-digital-label">Digital Design Only?</span>
+                <div class="bill-toggle-group">
+                  <label class="bill-toggle" [class.bill-toggle--selected]="form.get('sgDigitalGuideOnly')?.value === 'no'">
+                    <input type="radio" formControlName="sgDigitalGuideOnly" value="no" />
+                    <span class="bill-toggle__label">No</span>
+                  </label>
+                  <label class="bill-toggle" [class.bill-toggle--selected]="form.get('sgDigitalGuideOnly')?.value === 'yes'">
+                    <input type="radio" formControlName="sgDigitalGuideOnly" value="yes" />
+                    <span class="bill-toggle__label">Yes</span>
+                  </label>
+                </div>
+                <p class="sg-digital-hint">After upload, should 1) Register the order as sent, 2) Notify with email, 3) Add as a Google task after 24h</p>
+              </div>
+            </div>
+
+            <!-- Pricing Breakdown -->
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.dollar-sign" class="tp-section-icon" />
+                Pricing
+              </h4>
+              <div class="sg-pricing-grid">
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Price</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgPrice" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Biteplate</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgBiteplate" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Shipping &amp; Handling</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgShippingAndHandling" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Guide</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgGuide" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Lab</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgLab" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Fixation Functionality</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgFixationFunctionalityCost" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Extra Components</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgExtraComponentsCost" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Rush Fees</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgRushFees" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Surgical Guide Amount ($)</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="sgAmount" />
+                </div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Guide Zero Cost Reason</span>
+                  <select class="form-control sg-price-input" formControlName="sgZeroCostReason">
+                    @for (opt of sgZeroCostReasons; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('sgAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+
+          </div>
+        }
+
+        @if (showTempRestorationsPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Temp Restoration Order</h3>
+              <div class="tp-subtitle">Select restoration types and set pricing</div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label">
+                <tui-icon icon="@tui.layers" class="tp-section-icon" />
+                Restoration Types
+              </h4>
+              <div class="rest-type-grid">
+                <label class="order-type-card" [class.order-type-card--selected]="form.get('tempRestTypeTemp')?.value">
+                  <input type="checkbox" formControlName="tempRestTypeTemp" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.clock" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Temp</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card" [class.order-type-card--selected]="form.get('tempRestTypeGfmrBridge')?.value">
+                  <input type="checkbox" formControlName="tempRestTypeGfmrBridge" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.git-branch" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">GFMR – Bridge</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card" [class.order-type-card--selected]="form.get('tempRestTypeFmpGfmp')?.value">
+                  <input type="checkbox" formControlName="tempRestTypeFmpGfmp" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.box" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">FMP – GFMP</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.dollar-sign" class="tp-section-icon" />Pricing</h4>
+              <div class="sg-pricing-grid">
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Temp Restoration Amount ($)</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="tempRestAmount" />
+                </div>
+              </div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('tempRestAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showFinalRestorationsPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Final Restoration Order</h3>
+              <div class="tp-subtitle">Configure final restoration services and pricing</div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.settings" class="tp-section-icon" />Options</h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Rush</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('finalRestRush')?.value === 'no'">
+                      <input type="radio" formControlName="finalRestRush" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact tp-radio-card--rush" [class.tp-radio-card--selected]="form.get('finalRestRush')?.value === 'yes'">
+                      <input type="radio" formControlName="finalRestRush" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Pouring</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('finalRestPouring')?.value === 'no'">
+                      <input type="radio" formControlName="finalRestPouring" value="no" /><span class="tp-radio-label">NO</span>
+                    </label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('finalRestPouring')?.value === 'yes'">
+                      <input type="radio" formControlName="finalRestPouring" value="yes" /><span class="tp-radio-label">YES</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.award" class="tp-section-icon" />Services</h4>
+              <div class="rest-services-grid">
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceCrown')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceCrown" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.circle" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Crown</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceCrownBridge')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceCrownBridge" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.git-branch" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Crown – Bridge including Model (On Prepped Tooth)</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceAestheticPmma')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceAestheticPmma" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.star" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Aesthetic PMMA</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceFullArchWithTemp')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceFullArchWithTemp" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.layers" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Final Full Arch Restoration including temp (From Scan Body)</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceFullArchFinal')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceFullArchFinal" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.check-circle" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Full Arch Restoration Final</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+                <label class="order-type-card order-type-card--wide" [class.order-type-card--selected]="form.get('finalRestServiceCustomAbutment')?.value">
+                  <input type="checkbox" formControlName="finalRestServiceCustomAbutment" />
+                  <div class="order-type-card__icon"><tui-icon icon="@tui.tool" /></div>
+                  <div class="order-type-card__body"><span class="order-type-card__name">Custom Abutment (Abutment only)</span></div>
+                  <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                </label>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.dollar-sign" class="tp-section-icon" />Pricing</h4>
+              <div class="sg-pricing-grid">
+                <div class="sg-price-row"><span class="sg-price-label">Rush Fees ($)</span><input type="number" class="form-control sg-price-input" formControlName="finalRestRushFees" /></div>
+                <div class="sg-price-row"><span class="sg-price-label">Impression Pouring</span><input type="number" class="form-control sg-price-input" formControlName="finalRestImpressionPouring" /></div>
+                <div class="sg-price-row"><span class="sg-price-label">Shipping &amp; Handling</span><input type="number" class="form-control sg-price-input" formControlName="finalRestShippingHandling" /></div>
+                <div class="sg-price-row"><span class="sg-price-label">Final Restoration Amount ($)</span><input type="number" class="form-control sg-price-input" formControlName="finalRestAmount" /></div>
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Restoration Zero Cost Reason</span>
+                  <select class="form-control sg-price-input" formControlName="finalRestZeroCostReason">
+                    @for (opt of finalRestZeroCostReasons; track opt.value) { <option [value]="opt.value">{{ opt.label }}</option> }
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('finalRestAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showReportPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Report Order</h3>
+              <div class="tp-subtitle">Patient details and report configuration</div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.user" class="tp-section-icon" />Patient Info</h4>
+              <div class="tp-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Date of Birth</label>
+                  <input type="date" class="form-control" formControlName="reportDob" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Gender</label>
+                  <div class="bill-toggle-group">
+                    <label class="bill-toggle" [class.bill-toggle--selected]="form.get('reportGender')?.value === 'female'">
+                      <input type="radio" formControlName="reportGender" value="female" />
+                      <span class="bill-toggle__label">Female</span>
+                    </label>
+                    <label class="bill-toggle" [class.bill-toggle--selected]="form.get('reportGender')?.value === 'male'">
+                      <input type="radio" formControlName="reportGender" value="male" />
+                      <span class="bill-toggle__label">Male</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="form-label">Relevant History</label>
+                  <textarea class="form-control form-control--textarea" formControlName="reportRelevantHistory" rows="3" placeholder="Enter relevant medical history..."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.activity" class="tp-section-icon" />Evaluations &amp; Options</h4>
+              <div class="tp-cards-grid tp-cards-grid--4col">
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Implant Planned</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportImplantPlanned')?.value === 'no'"><input type="radio" formControlName="reportImplantPlanned" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportImplantPlanned')?.value === 'yes'"><input type="radio" formControlName="reportImplantPlanned" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Evaluate Existing Implant</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportEvaluateExistingImplant')?.value === 'no'"><input type="radio" formControlName="reportEvaluateExistingImplant" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportEvaluateExistingImplant')?.value === 'yes'"><input type="radio" formControlName="reportEvaluateExistingImplant" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Sinus Evaluation</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportSinusEvaluation')?.value === 'no'"><input type="radio" formControlName="reportSinusEvaluation" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportSinusEvaluation')?.value === 'yes'"><input type="radio" formControlName="reportSinusEvaluation" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">TMJ Evaluation</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportTmjEvaluation')?.value === 'no'"><input type="radio" formControlName="reportTmjEvaluation" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportTmjEvaluation')?.value === 'yes'"><input type="radio" formControlName="reportTmjEvaluation" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Rule Out Pathology</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportRuleOutPathology')?.value === 'no'"><input type="radio" formControlName="reportRuleOutPathology" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportRuleOutPathology')?.value === 'yes'"><input type="radio" formControlName="reportRuleOutPathology" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">AirWay Evaluation</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportAirwayEvaluation')?.value === 'no'"><input type="radio" formControlName="reportAirwayEvaluation" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportAirwayEvaluation')?.value === 'yes'"><input type="radio" formControlName="reportAirwayEvaluation" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Basic Report</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportBasicReport')?.value === 'no'"><input type="radio" formControlName="reportBasicReport" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportBasicReport')?.value === 'yes'"><input type="radio" formControlName="reportBasicReport" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Small Field Of View</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportSmallFieldOfView')?.value === 'no'"><input type="radio" formControlName="reportSmallFieldOfView" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportSmallFieldOfView')?.value === 'yes'"><input type="radio" formControlName="reportSmallFieldOfView" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.calendar" class="tp-section-icon" />Status &amp; Dates</h4>
+              <div class="tp-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Date of Image Acquisition</label>
+                  <input type="date" class="form-control" formControlName="reportDateOfImageAcquisition" />
+                </div>
+              </div>
+              <div class="conv-status-group" style="margin-top:12px">
+                @for (s of reportStatusOptions; track s.value) {
+                  <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportStatus')?.value === s.value">
+                    <input type="radio" formControlName="reportStatus" [value]="s.value" /><span class="tp-radio-label">{{ s.label }}</span>
+                  </label>
+                }
+                @if (form.get('reportStatus')?.value === 'onHold') {
+                  <input type="text" class="form-control conv-reason-input" formControlName="reportStatusReason" placeholder="Reason..." />
+                }
+              </div>
+              <div class="tp-cards-grid tp-cards-grid--4col" style="margin-top:16px">
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Rush</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportRush')?.value === 'no'"><input type="radio" formControlName="reportRush" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact tp-radio-card--rush" [class.tp-radio-card--selected]="form.get('reportRush')?.value === 'yes'"><input type="radio" formControlName="reportRush" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+                <div class="tp-card tp-card--compact">
+                  <div class="tp-card-header"><span class="tp-card-title">Redo</span></div>
+                  <div class="tp-card-body">
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportRedo')?.value === 'no'"><input type="radio" formControlName="reportRedo" value="no" /><span class="tp-radio-label">NO</span></label>
+                    <label class="tp-radio-card tp-radio-card--compact" [class.tp-radio-card--selected]="form.get('reportRedo')?.value === 'yes'"><input type="radio" formControlName="reportRedo" value="yes" /><span class="tp-radio-label">YES</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.file-text" class="tp-section-icon" />Notes</h4>
+              <div class="tp-fields-grid">
+                <div class="form-group form-group--full">
+                  <label class="form-label">Client Notes</label>
+                  <textarea class="form-control form-control--textarea" formControlName="reportClientNotes" rows="3" placeholder="Notes for the client..."></textarea>
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="form-label">Radiologist Notes</label>
+                  <textarea class="form-control form-control--textarea" formControlName="reportRadiologistNotes" rows="3" placeholder="Internal radiologist notes..."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="tp-total">
+              <div class="tp-total-label">Report Amount ($)</div>
+              <div class="tp-total-amount">{{ form.get('reportAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('reportAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+
+        @if (showMiscPanel) {
+          <div class="conditional-panel">
+            <div class="tp-header">
+              <h3 class="tp-title">Misc Order</h3>
+              <div class="tp-subtitle">Select order type and add comments</div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.more-horizontal" class="tp-section-icon" />Order Type</h4>
+              <div class="misc-type-grid">
+                @for (opt of miscOrderTypes; track opt.value) {
+                  <label class="order-type-card" [class.order-type-card--selected]="form.get('miscOrderType')?.value === opt.value">
+                    <input type="radio" formControlName="miscOrderType" [value]="opt.value" />
+                    <div class="order-type-card__icon"><tui-icon icon="@tui.package" /></div>
+                    <div class="order-type-card__body"><span class="order-type-card__name">{{ opt.label }}</span></div>
+                    <div class="order-type-card__check"><tui-icon icon="@tui.check" /></div>
+                  </label>
+                }
+              </div>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.message-square" class="tp-section-icon" />Comment</h4>
+              <textarea class="form-control form-control--textarea" formControlName="miscComment" rows="4" placeholder="Add any additional comments or instructions..."></textarea>
+            </div>
+            <div class="tp-section">
+              <h4 class="tp-section-label"><tui-icon icon="@tui.dollar-sign" class="tp-section-icon" />Pricing</h4>
+              <div class="sg-pricing-grid">
+                <div class="sg-price-row">
+                  <span class="sg-price-label">Misc Amount ($)</span>
+                  <input type="number" class="form-control sg-price-input" formControlName="miscAmount" />
+                </div>
+              </div>
+            </div>
+            <div class="tp-grand-total">
+              <div class="tp-grand-total-label">Total Amount</div>
+              <div class="tp-grand-total-amount">${{ form.get('miscAmount')?.value | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Section 3: Notes -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">NOTES</h2>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-content">
+        <div class="form-group">
+          <label class="form-label">Internal Case Note</label>
+          <textarea
+            class="form-control form-control--textarea"
+            formControlName="internalCaseNote"
+            rows="3"
+            placeholder="Internal notes (not visible to client)"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Special Pre Shipping Instruction</label>
+          <textarea
+            class="form-control form-control--textarea"
+            formControlName="specialPreShippingInstruction"
+            rows="3"
+            placeholder="Special instructions before shipping"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Client Case Note</label>
+          <textarea
+            class="form-control form-control--textarea"
+            formControlName="clientCaseNote"
+            rows="3"
+            placeholder="Notes visible to client"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: File Attachment -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">FILE ATTACHMENT</h2>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-content">
+        <div
+          class="file-dropzone"
+          [class.file-dropzone--dragging]="isDragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          @if (!selectedFile) {
+            <div class="dropzone-content">
+              <tui-icon icon="@tui.upload-cloud" class="dropzone-icon" />
+              <p class="dropzone-text">Drag and drop a file here</p>
+              <p class="dropzone-subtext">or</p>
+              <label class="btn btn--outline btn--small">
+                <input
+                  type="file"
+                  class="file-input"
+                  (change)="onFileSelected($event)"
+                />
+                Select a File
+              </label>
+            </div>
+          } @else {
+            <div class="file-selected">
+              <tui-icon icon="@tui.file" class="file-icon" />
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <button
+                type="button"
+                class="file-remove"
+                (click)="removeFile()"
+              >
+                <tui-icon icon="@tui.x" />
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Notifications -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">NOTIFICATIONS</h2>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-content">
+        <div class="notification-grid">
+          <!-- Send Mail To -->
+          <div class="notification-column">
+            <h3 class="notification-column-title">Send Mail To</h3>
+            <div class="notif-chip-list">
+              @for (group of mailToGroups; track group.id) {
+                <label class="notif-chip" [class.notif-chip--selected]="isMailToChecked(group.id)">
+                  <input
+                    type="checkbox"
+                    [checked]="isMailToChecked(group.id)"
+                    (change)="toggleMailTo(group.id)"
+                  />
+                  <span class="notif-chip__dot"></span>
+                  <span class="notif-chip__label">{{ group.label }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Send IH Task -->
+          <div class="notification-column">
+            <h3 class="notification-column-title">Send IH Task</h3>
+            <div class="notif-chip-list">
+              @for (group of ihTaskGroups; track group.id) {
+                <label class="notif-chip" [class.notif-chip--selected]="form.get('sendIHTask')?.value === group.id">
+                  <input
+                    type="radio"
+                    formControlName="sendIHTask"
+                    [value]="group.id"
+                  />
+                  <span class="notif-chip__dot"></span>
+                  <span class="notif-chip__label">{{ group.label }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Priority -->
+        <div class="priority-section">
+          <label class="rush-card" [class.rush-card--selected]="form.get('rushTask')?.value">
+            <input type="checkbox" formControlName="rushTask" />
+            <tui-icon icon="@tui.zap" class="rush-card__icon" />
+            <span class="rush-card__label">RUSH Task</span>
+            <tui-icon icon="@tui.check" class="rush-card__check" />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Software & Order Settings -->
+
+
+    <!-- Form Actions (Bottom) -->
+    <div class="form-footer">
+      <div class="form-footer__total">
+        <span class="form-footer__total-label">Total Amount</span>
+        <span class="form-footer__total-value">${{ grandTotal | number:'1.2-2' }}</span>
+      </div>
+      <div class="form-footer__actions">
+        <button type="button" class="btn btn--outline" (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn--primary" (click)="onSubmit()">
+          Save Order
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

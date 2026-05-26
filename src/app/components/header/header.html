@@ -10,14 +10,15 @@
 
     <nav class="dx-header__nav">
       @for (item of navItems; track item.label) {
-        <button
+        <a
           class="dx-header__nav-item"
-          [class.dx-header__nav-item--active]="item.active"
-          type="button"
+          [routerLink]="item.route"
+          routerLinkActive="dx-header__nav-item--active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/orders' }"
         >
           <tui-icon [icon]="item.icon" class="dx-header__nav-icon" />
           <span>{{ item.label }}</span>
-        </button>
+        </a>
       }
     </nav>
 
@@ -43,9 +44,12 @@
       </button>
 
       <div class="dx-header__user">
-        <div class="dx-header__user-avatar">AK</div>
-        <span class="dx-header__user-name">shrenik</span>
+        <div class="dx-header__user-avatar">{{ initials }}</div>
+        <span class="dx-header__user-name">{{ username }}</span>
         <tui-icon icon="@tui.chevron-down" class="dx-header__user-chevron" />
+        <button class="dx-header__logout-btn" type="button" (click)="logout()" title="Sign out">
+          <tui-icon icon="@tui.log-out" />
+        </button>
       </div>
     </div>
   </div>

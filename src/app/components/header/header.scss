@@ -81,6 +81,7 @@
   border-radius: 4px;
   transition: all var(--dx-transition-fast);
   position: relative;
+  text-decoration: none;
 
   &:hover {
     background: rgba(255, 255, 255, 0.12);
@@ -203,4 +204,25 @@
 .dx-header__user-chevron {
   color: rgba(255, 255, 255, 0.5);
   font-size: 11px;
+}
+
+.dx-header__logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: all var(--dx-transition-fast);
+  margin-left: 2px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
 }
