@@ -6,9 +6,12 @@ const REMEMBER_KEY = 'dx_remember';
 
 const VALID_USERNAME = 'shrouk';
 const VALID_PASSWORD = 'Sam1@234';
+const username= ''
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   constructor(private router: Router) {}
 
   login(username: string, password: string, rememberMe = false): boolean {

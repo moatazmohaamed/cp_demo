@@ -1,10 +1,12 @@
-import { Component, signal, computed, effect } from '@angular/core';
+import { Component, signal, computed, effect, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TuiIcon } from '@taiga-ui/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 import { Order } from '../../models/order.model';
-import { MOCK_ORDERS } from '../../data/mock-orders';
+import { OrderService } from '../../services/order.service';
 import { StatusHistoryModalComponent } from '../../components/status-history-modal/status-history-modal.component';
 import { FinancialSummaryComponent } from '../../components/financial-summary/financial-summary.component';
 import { FinancialDetailsModalComponent } from '../../components/financial-details-modal/financial-details-modal.component';
@@ -33,8 +35,68 @@ interface ColumnDefinition {
   templateUrl: './orders-page.html',
   styleUrl: './order-page.scss',
 })
-export class OrdersPageComponent {
-  readonly allOrders = signal<Order[]>(MOCK_ORDERS);
+export class OrdersPageComponent implements OnInit {
+  readonly allOrders = signal<Order[]>([]);
+  
+  constructor(
+    private orderService: OrderService,
+    private router: Router
+  ) {
+    // Load orders on initialization
+    this.loadOrders();
+    
+    // Expand all sub-services by default
+    effect(() => {
+      const orderIds = this.allOrders()
+        .filter(order => order.subServices.length > 0)
+        .map(order => order.id);
+      this.expandedOrders.set(new Set(orderIds));
+    });
+
+    // Reset to page 1 when filters change
+    effect(() => {
+      this.searchQuery();
+      this.selectedStatus();
+      this.selectedDuration();
+      this.selectedScanCenter();
+      this.currentPage.set(1);
+      this.checkedOrders.set(new Set());
+    });
+
+    // Reset to page 1 and clear selection when page size changes
+    effect(() => {
+      this.pageSize();
+      this.currentPage.set(1);
+      this.checkedOrders.set(new Set());
+    });
+
+    // Reset to page 1 and clear selection when sort changes
+    effect(() => {
+      this.sortField();
+      this.sortOrder();
+      this.currentPage.set(1);
+      this.checkedOrders.set(new Set());
+    });
+  }
+  
+  ngOnInit(): void {
+    // Reload orders whenever we navigate to this page
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (event.url === '/orders' || event.urlAfterRedirects === '/orders') {
+          this.loadOrders();
+        }
+      });
+  }
+  
+  /**
+   * Load orders from OrderService (localStorage + mock data)
+   */
+  private loadOrders(): void {
+    const orders = this.orderService.getOrders();
+    this.allOrders.set(orders);
+  }
   
   // Filters
   readonly searchQuery = signal('');
@@ -390,41 +452,6 @@ export class OrdersPageComponent {
     if (this.paginatedOrders().length === 0) return false;
     return this.paginatedOrders().every((order) => this.checkedOrders().has(order.id));
   });
-
-  constructor() {
-    // Expand all sub-services by default
-    effect(() => {
-      const orderIds = this.allOrders()
-        .filter(order => order.subServices.length > 0)
-        .map(order => order.id);
-      this.expandedOrders.set(new Set(orderIds));
-    });
-
-    // Reset to page 1 when filters change
-    effect(() => {
-      this.searchQuery();
-      this.selectedStatus();
-      this.selectedDuration();
-      this.selectedScanCenter();
-      this.currentPage.set(1);
-      this.checkedOrders.set(new Set());
-    });
-
-    // Reset to page 1 and clear selection when page size changes
-    effect(() => {
-      this.pageSize();
-      this.currentPage.set(1);
-      this.checkedOrders.set(new Set());
-    });
-
-    // Reset to page 1 and clear selection when sort changes
-    effect(() => {
-      this.sortField();
-      this.sortOrder();
-      this.currentPage.set(1);
-      this.checkedOrders.set(new Set());
-    });
-  }
 
   toggleSort(field: keyof Order): void {
     if (this.sortField() === field) {
