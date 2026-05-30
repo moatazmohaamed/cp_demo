@@ -1920,4 +1920,54 @@
       </div>
     </div>
   </form>
+
+  <!-- ── Modal overlay ── -->
+  @if (modal.visible) {
+    <div class="dx-modal-backdrop" (click)="closeModal()">
+      <div class="dx-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+        <!-- Icon -->
+        <div class="dx-modal__icon dx-modal__icon--{{ modal.type }}">
+          @if (modal.type === 'confirm') {
+            <tui-icon icon="@tui.alert-triangle" />
+          } @else if (modal.type === 'success') {
+            <tui-icon icon="@tui.check-circle" />
+          } @else if (modal.type === 'error') {
+            <tui-icon icon="@tui.x-circle" />
+          } @else {
+            <tui-icon icon="@tui.info" />
+          }
+        </div>
+
+        <!-- Content -->
+        <div class="dx-modal__content">
+          <h3 class="dx-modal__title">{{ modal.title }}</h3>
+          <p class="dx-modal__message">{{ modal.message }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="dx-modal__actions">
+          @if (modal.type === 'confirm') {
+            <button type="button" class="btn btn--outline" (click)="closeModal()">
+              Keep Editing
+            </button>
+            <button type="button" class="btn btn--danger" (click)="confirmModal()">
+              Discard Changes
+            </button>
+          } @else if (modal.type === 'success') {
+            <button type="button" class="btn btn--primary" (click)="confirmModal()">
+              <tui-icon icon="@tui.check" />
+              Go to Orders
+            </button>
+          } @else {
+            <button type="button" class="btn btn--primary" (click)="closeModal()">
+              OK
+            </button>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>

@@ -471,22 +471,44 @@ export class AddOrderComponent implements OnInit {
     const hasOrderType = orderTypes.some((type) => this.form.get(type)?.value);
 
     if (!hasOrderType) {
-      alert('Please select at least one order type');
+      this.showModal('warning', 'No Order Selected', 'Please select at least one order type before saving.');
       return;
     }
 
     if (this.form.valid) {
       console.log('Form submitted:', this.form.value);
-      // TODO: Add actual submission logic here
-      alert('Order saved successfully! (Check console for form data)');
+      this.showModal('success', 'Order Saved', 'The order has been saved successfully.');
     } else {
       console.log('Form is invalid:', this.form.errors);
-      alert('Please fill in all required fields');
+      this.showModal('error', 'Validation Error', 'Please fill in all required fields before saving.');
     }
   }
 
   onCancel(): void {
-    if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+    this.showModal('confirm', 'Discard Changes', 'Are you sure you want to cancel? All unsaved changes will be lost.');
+  }
+
+  // ── Modal state ──────────────────────────────────────────────
+  modal: {
+    visible: boolean;
+    type: 'confirm' | 'success' | 'error' | 'warning';
+    title: string;
+    message: string;
+  } = { visible: false, type: 'confirm', title: '', message: '' };
+
+  showModal(type: 'confirm' | 'success' | 'error' | 'warning', title: string, message: string): void {
+    this.modal = { visible: true, type, title, message };
+  }
+
+  closeModal(): void {
+    this.modal = { ...this.modal, visible: false };
+  }
+
+  confirmModal(): void {
+    this.closeModal();
+    if (this.modal.type === 'confirm') {
+      this.router.navigate(['/orders']);
+    } else if (this.modal.type === 'success') {
       this.router.navigate(['/orders']);
     }
   }
